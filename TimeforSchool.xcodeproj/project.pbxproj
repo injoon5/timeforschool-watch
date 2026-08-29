@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		003C9A3D8089003E342A1191 /* MealTextCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95069F5AA1EB813187782FDD /* MealTextCleaner.swift */; };
 		00F372B9E18891A954A570D4 /* SchoolEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64338BD1749383E92C059C18 /* SchoolEndpoint.swift */; };
+		01B7DED102764DB88E44CE82 /* MealServiceCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */; };
 		01F3892436654810DA57CB55 /* SchoolIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */; };
 		02F6763C7A9F63E989B47870 /* SchoolRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA535F197D82441688BA9B8 /* SchoolRepository.swift */; };
 		03DFD2C12018575F320766DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11F00F8E82436941EBCA94A9 /* Assets.xcassets */; };
@@ -28,6 +29,7 @@
 		35BDC8DFA96D73FAC76C07B2 /* TimetableScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4835C74160CC3241201753D7 /* TimetableScreen.swift */; };
 		362AF8CDB8C86D250942DF86 /* MealDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F0CFF7F9E6740702D9B9E5 /* MealDTO.swift */; };
 		38C3887084E504B0331D1FCA /* MealsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB748F5AF25C966F00E785CE /* MealsScreen.swift */; };
+		3E5ABE6EA4C6D9A0CB23CE16 /* MealServiceCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */; };
 		3FCBBE89484F1C0DFDE9755C /* BellSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4BCC330EE2C1BA22BE0F16 /* BellSchedule.swift */; };
 		409E92AD40605C0E1F3CC13C /* DayIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A45400F46802DBBF3119C55C /* DayIndicator.swift */; };
 		4128952EFB3E31CF8267ABA0 /* NextLessonWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC7389201879B86164FFD06 /* NextLessonWidget.swift */; };
@@ -50,6 +52,7 @@
 		8A27F966A1F4732391E523B1 /* SchoolAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50823030D7E8FF5193348BBD /* SchoolAPI.swift */; };
 		8D99C1785E3C15675C0140DB /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52107D962D8D7345EE96594D /* DeepLink.swift */; };
 		8FB517256C930199FA37D6DF /* NextLessonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355AC1DEDB865C077E13B2E4 /* NextLessonView.swift */; };
+		957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */; };
 		98125B8E78ABEB40F6DE5C8A /* SchoolIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */; };
 		9D11A381740056B641BD36BD /* SchoolClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4716679A0A1544E74C10C29A /* SchoolClock.swift */; };
 		9E5549FFE951EA3EC1EB9BEC /* SchoolAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50823030D7E8FF5193348BBD /* SchoolAPI.swift */; };
@@ -82,9 +85,17 @@
 		EBAB5E47CAB70B862BF270F3 /* AdvisoryMarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7E3092B0D4C50CFB5C28A3 /* AdvisoryMarks.swift */; };
 		F85873EC1058FE0F4FE5EFA0 /* TimeforSchoolWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB862E7AA4501AE6757C8D47 /* TimeforSchoolWidgetBundle.swift */; };
 		FBF7F2248F6AFB346D1A8BAD /* SchoolWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF7BEB23B27DBBAFFE9B5F1 /* SchoolWeek.swift */; };
+		FED0851531F5F79CD2ECA18D /* BellScheduleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6F52ADD027871559F9FAD4DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C33270496C535DA91C7CB38 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E59E3E0DE89FC83C1EAEFE0;
+			remoteInfo = TimeforSchool;
+		};
 		7D47FAF7F6038AB689CFEC16 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2C33270496C535DA91C7CB38 /* Project object */;
@@ -119,7 +130,9 @@
 		2C84393891CF144640514730 /* TimeforSchoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeforSchoolApp.swift; sourceTree = "<group>"; };
 		31F8040715BE0714668006B1 /* MealWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidget.swift; sourceTree = "<group>"; };
 		33A9E573F01BD081A961ED2C /* Snapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snapshots.swift; sourceTree = "<group>"; };
+		348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealServiceCalendar.swift; sourceTree = "<group>"; };
 		355AC1DEDB865C077E13B2E4 /* NextLessonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonView.swift; sourceTree = "<group>"; };
+		388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPresentationTests.swift; sourceTree = "<group>"; };
 		4716679A0A1544E74C10C29A /* SchoolClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolClock.swift; sourceTree = "<group>"; };
 		47C74FAE6E784C3D5981A7C2 /* SchoolSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolSchedule.swift; sourceTree = "<group>"; };
 		4835C74160CC3241201753D7 /* TimetableScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableScreen.swift; sourceTree = "<group>"; };
@@ -145,8 +158,10 @@
 		A306BD31C6680F8551A5A7AC /* DayHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeader.swift; sourceTree = "<group>"; };
 		A45400F46802DBBF3119C55C /* DayIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayIndicator.swift; sourceTree = "<group>"; };
 		A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolIdentity.swift; sourceTree = "<group>"; };
+		A8314A3651DA432B0C90A254 /* TimeforSchoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimeforSchoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA96C3D9DDC6AC251599043A /* Lesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lesson.swift; sourceTree = "<group>"; };
 		AC76821B7EB63E640991EAFF /* SchoolLocale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolLocale.swift; sourceTree = "<group>"; };
+		BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BellScheduleTests.swift; sourceTree = "<group>"; };
 		BB748F5AF25C966F00E785CE /* MealsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsScreen.swift; sourceTree = "<group>"; };
 		CB6ACDB0320A36FFA0B60A4D /* MealProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealProvider.swift; sourceTree = "<group>"; };
 		CB862E7AA4501AE6757C8D47 /* TimeforSchoolWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeforSchoolWidgetBundle.swift; sourceTree = "<group>"; };
@@ -168,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				6B157C729D4D01A830A1E0A1 /* TimeforSchool.app */,
+				A8314A3651DA432B0C90A254 /* TimeforSchoolTests.xctest */,
 				DD9B185B7B7ABA62885FBA55 /* TimeforSchoolWidgets.appex */,
 			);
 			name = Products;
@@ -267,6 +283,7 @@
 			children = (
 				F25DA2460A2137A5D50C02D0 /* Shared */,
 				2FED532BC4AB12C202BA5341 /* TimeforSchool Watch App */,
+				C640FD765BA3CAFD21CCED36 /* TimeforSchoolTests */,
 				F21D7FBB4F502EF918E22CFA /* TimeforSchoolWidgets */,
 				090B3162D1248F1D025464DD /* Products */,
 			);
@@ -279,6 +296,15 @@
 				8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		C640FD765BA3CAFD21CCED36 /* TimeforSchoolTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */,
+				388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */,
+			);
+			path = TimeforSchoolTests;
 			sourceTree = "<group>";
 		};
 		D61462AD0FCE4C7ED15F20B6 /* Design */ = {
@@ -358,6 +384,7 @@
 				52107D962D8D7345EE96594D /* DeepLink.swift */,
 				AA96C3D9DDC6AC251599043A /* Lesson.swift */,
 				D47EA31647C2D1D2F2EE2A5D /* Meal.swift */,
+				348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */,
 				5FBDDAE8F3C34D902AA8A8B2 /* SchoolDate.swift */,
 				A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */,
 				AC76821B7EB63E640991EAFF /* SchoolLocale.swift */,
@@ -407,6 +434,24 @@
 			productReference = DD9B185B7B7ABA62885FBA55 /* TimeforSchoolWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		BCD69C0B550C951141352A08 /* TimeforSchoolTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5DB039C2E4F3BF3E79C6F831 /* Build configuration list for PBXNativeTarget "TimeforSchoolTests" */;
+			buildPhases = (
+				26611A39726CAD4D06A783A1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7A0E570742CA5C48559D3EF0 /* PBXTargetDependency */,
+			);
+			name = TimeforSchoolTests;
+			packageProductDependencies = (
+			);
+			productName = TimeforSchoolTests;
+			productReference = A8314A3651DA432B0C90A254 /* TimeforSchoolTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -421,6 +466,10 @@
 						ProvisioningStyle = Automatic;
 					};
 					8A7A05033A2AC497F3611B8C = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					BCD69C0B550C951141352A08 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
@@ -441,6 +490,7 @@
 			projectRoot = "";
 			targets = (
 				3E59E3E0DE89FC83C1EAEFE0 /* TimeforSchool */,
+				BCD69C0B550C951141352A08 /* TimeforSchoolTests */,
 				8A7A05033A2AC497F3611B8C /* TimeforSchoolWidgets */,
 			);
 		};
@@ -467,6 +517,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		26611A39726CAD4D06A783A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FED0851531F5F79CD2ECA18D /* BellScheduleTests.swift in Sources */,
+				957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5A36E054EEA554B9E3B7C44F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -484,6 +543,7 @@
 				256CBE8212E9C6C30CB6B592 /* MealDTO.swift in Sources */,
 				A590C635FD99DDAEC4C04CA9 /* MealHeader.swift in Sources */,
 				BE28E57A0DA6EB2BDC657E54 /* MealPage.swift in Sources */,
+				3E5ABE6EA4C6D9A0CB23CE16 /* MealServiceCalendar.swift in Sources */,
 				645913C4077E2486F608E06B /* MealTextCleaner.swift in Sources */,
 				38C3887084E504B0331D1FCA /* MealsScreen.swift in Sources */,
 				0E4483A6C60E43E060CB5300 /* Metrics.swift in Sources */,
@@ -526,6 +586,7 @@
 				362AF8CDB8C86D250942DF86 /* MealDTO.swift in Sources */,
 				CCB946F22B890DB0C6E62986 /* MealEntry.swift in Sources */,
 				1B784FAC60EA215C90E48DE9 /* MealProvider.swift in Sources */,
+				01B7DED102764DB88E44CE82 /* MealServiceCalendar.swift in Sources */,
 				003C9A3D8089003E342A1191 /* MealTextCleaner.swift in Sources */,
 				41779272C8EF958B8FE14FE7 /* MealWidget.swift in Sources */,
 				C176AAA1F0FB74D06B6748B3 /* MealWidgetView.swift in Sources */,
@@ -555,6 +616,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7A0E570742CA5C48559D3EF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E59E3E0DE89FC83C1EAEFE0 /* TimeforSchool */;
+			targetProxy = 6F52ADD027871559F9FAD4DB /* PBXContainerItemProxy */;
+		};
 		9B99EB4BE27E1F76BE5FFE77 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8A7A05033A2AC497F3611B8C /* TimeforSchoolWidgets */;
@@ -563,6 +629,42 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0E4D954EBD42538770AE5BF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch.TimeforSchoolTests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimeforSchool.app/TimeforSchool";
+			};
+			name = Debug;
+		};
+		342EBFBB1EFA4BE6A044D89A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch.TimeforSchoolTests;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimeforSchool.app/TimeforSchool";
+			};
+			name = Release;
+		};
 		543711E9CFFF337490899033 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -782,6 +884,15 @@
 			buildConfigurations = (
 				DB34053948CB06E140D0DD83 /* Debug */,
 				543711E9CFFF337490899033 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5DB039C2E4F3BF3E79C6F831 /* Build configuration list for PBXNativeTarget "TimeforSchoolTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E4D954EBD42538770AE5BF3 /* Debug */,
+				342EBFBB1EFA4BE6A044D89A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

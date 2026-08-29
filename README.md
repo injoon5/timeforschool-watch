@@ -67,12 +67,15 @@ The screen re-evaluates once a minute through `TimelineView(.everyMinute)`.
 Two horizontal pages, 중식 and 석식, each a single column of dishes with the
 calorie count at the end.
 
-- Before 13:10: pages are ordered 중식, 석식, both showing today.
-- After 13:10: 중식 rolls over to the next served day and the order reverses to
-  석식, 중식.
-- After 18:40: 석식 rolls over as well.
-- If today serves no meal at all (weekend, holiday), both pages roll over
-  immediately.
+- Before 13:10, today's 중식 leads when it is published; otherwise the earliest
+  available service leads.
+- After 13:10, 중식 rolls over to its next published day while an available
+  dinner remains on today.
+- After 18:40, 석식 rolls over as well and the earliest actual future service
+  leads (normally the next day's 중식).
+- Each service skips its own unpublished days, so a lunch-only day never
+  invents dinner. A known empty response remains an honest empty state rather
+  than claiming tomorrow has food.
 
 A rolled-over page is flagged `내일`, or with the date when the next served day
 is further out.
@@ -97,9 +100,8 @@ for the next hour, plus one entry at every bell time, and reloads to refill the
 window.
 
 **급식** — families: `accessoryRectangular`, `accessoryInline`. Shows the next
-meal that has not been served: today's 중식 until 13:10, today's 석식 until
-18:40, then the next served day's 중식. The timeline has entries at 13:10,
-18:40 and midnight.
+published meal that has not been served, respecting separate lunch and dinner
+availability. The timeline has entries at 13:10, 18:40 and midnight.
 
 Both widgets declare `WidgetRelevance` so the Smart Stack surfaces them at the
 right times: 07:30–17:00 for the timetable, 11:00–13:10 and 17:00–18:40 for

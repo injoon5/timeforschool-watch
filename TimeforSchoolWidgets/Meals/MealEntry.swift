@@ -18,11 +18,14 @@ struct MealEntry: TimelineEntry {
         )
     )
 
-    /// Picks the meal the wearer is actually waiting for at `date`, off the
-    /// same cutoffs the meals screen uses: 중식 until 13:10, 석식 until 18:40,
-    /// then tomorrow's 중식.
-    static func resolve(at date: Date, snapshot: MealSnapshot?) -> MealEntry {
-        let next = MealPresentation.upcoming(now: date, availableDays: snapshot?.servedDays() ?? [])
+    /// Picks the published meal the wearer is actually waiting for at `date`,
+    /// using the same service-specific availability and cutoffs as the app.
+    static func resolve(
+        at date: Date,
+        snapshot: MealSnapshot?,
+        calendar: MealServiceCalendar?
+    ) -> MealEntry {
+        let next = MealPresentation.upcoming(now: date, calendar: calendar)
         return MealEntry(
             date: date,
             presentation: next,

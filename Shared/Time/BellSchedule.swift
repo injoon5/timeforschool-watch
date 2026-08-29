@@ -24,15 +24,20 @@ struct BellSchedule: Hashable, Codable, Sendable {
         var parsed: [Int: Int] = [:]
         for entry in dayTime {
             guard let open = entry.firstIndex(of: "("), let close = entry.firstIndex(of: ")"),
-                  let period = Int(entry[entry.startIndex..<open].trimmingCharacters(in: .whitespaces))
+                  open < close,
+                  let period = Int(entry[entry.startIndex..<open].trimmingCharacters(in: .whitespaces)),
+                  period > 0
             else { continue }
             let clock = entry[entry.index(after: open)..<close]
             let parts = clock.split(separator: ":")
-            guard parts.count == 2, let hour = Int(parts[0]), let minute = Int(parts[1]) else { continue }
+            guard parts.count == 2,
+                  let hour = Int(parts[0]), (0..<24).contains(hour),
+                  let minute = Int(parts[1]), (0..<60).contains(minute)
+            else { continue }
             parsed[period] = hour * 60 + minute
         }
         guard !parsed.isEmpty else { return nil }
-        starts = parsed
+        starts = BellSchedule.standard.starts.merging(parsed) { _, parsed in parsed }
         lessonLength = BellSchedule.standard.lessonLength
     }
 

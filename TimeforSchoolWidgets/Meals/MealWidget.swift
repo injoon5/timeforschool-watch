@@ -3,7 +3,7 @@ import WidgetKit
 
 /// A Smart Stack card showing whichever meal is coming up next.
 struct MealWidget: Widget {
-    static let kind = "school.timefor.watch.Meal"
+    nonisolated static let kind = "school.timefor.watch.Meal"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: MealProvider()) { entry in

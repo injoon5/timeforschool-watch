@@ -44,8 +44,9 @@ struct MealSnapshot: Codable, Sendable {
         meals.first { $0.kind == kind && $0.day == day }
     }
 
-    /// Days that have at least one lunch or dinner served.
-    func servedDays() -> Set<SchoolDate> {
-        Set(meals.lazy.filter { $0.kind != .breakfast && !$0.dishes.isEmpty }.map(\.day))
+    /// Published dates by service. An empty value is meaningful: the server
+    /// successfully reported that the window contains no meals.
+    func serviceCalendar() -> MealServiceCalendar {
+        MealServiceCalendar(meals: meals)
     }
 }

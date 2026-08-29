@@ -61,77 +61,99 @@ struct MealPresentation: Hashable, Sendable, Identifiable {
 
     /// Resolves both pages plus their order for `now`.
     ///
-    /// 중식 rolls over at 13:10 and 석식 at 18:40; whichever meal has already
-    /// rolled over sinks below the one still ahead of the wearer.
-    static func pages(now: Date, availableDays: Set<SchoolDate>) -> [MealPresentation] {
+    /// 중식 rolls over at 13:10 and 석식 at 18:40. A service missing today rolls
+    /// over immediately, and the earliest actually published service leads.
+    static func pages(now: Date, calendar: MealServiceCalendar?) -> [MealPresentation] {
         let minutes = SchoolClock.minutesSinceMidnight(now)
         let today = SchoolDate(now)
 
-        // A day the school serves nothing — a weekend or a holiday — has
-        // nothing to wait for, so both pages move on rather than showing two
-        // empty screens until 18:40.
-        let servesToday = availableDays.isEmpty || availableDays.contains(today)
-
         let lunch = page(
             kind: .lunch,
-            rolledOver: !servesToday || minutes >= BellSchedule.lunchCutoff,
+            rolledOver: calendar.map { !$0.serves(.lunch, on: today) } ?? false
+                || minutes >= BellSchedule.lunchCutoff,
             today: today,
-            availableDays: availableDays
+            calendar: calendar
         )
         let dinner = page(
             kind: .dinner,
-            rolledOver: !servesToday || minutes >= BellSchedule.dinnerCutoff,
+            rolledOver: calendar.map { !$0.serves(.dinner, on: today) } ?? false
+                || minutes >= BellSchedule.dinnerCutoff,
             today: today,
-            availableDays: availableDays
+            calendar: calendar
         )
 
-        return minutes < BellSchedule.lunchCutoff ? [lunch, dinner] : [dinner, lunch]
+        return upcoming(now: now, calendar: calendar).kind == .dinner
+            ? [dinner, lunch]
+            : [lunch, dinner]
     }
 
     /// The single meal a glance should be about: the next service that has not
     /// been served yet.
     ///
-    /// This is not simply the first of `pages`. Between 13:10 and 18:40 the
-    /// pages lead with 석식 because 중식 has already been eaten — but once 석식
-    /// has been served too, the next thing anyone is waiting for is *tomorrow's
-    /// 중식*, not tomorrow's 석식, which is a whole day away.
-    static func upcoming(now: Date, availableDays: Set<SchoolDate>) -> MealPresentation {
+    /// Availability is service-specific: a lunch-only day must not invent a
+    /// dinner, and a long holiday skips directly to the next published date.
+    static func upcoming(now: Date, calendar: MealServiceCalendar?) -> MealPresentation {
         let minutes = SchoolClock.minutesSinceMidnight(now)
         let today = SchoolDate(now)
-        let servesToday = availableDays.isEmpty || availableDays.contains(today)
 
-        if servesToday {
-            if minutes < BellSchedule.lunchCutoff {
-                return MealPresentation(kind: .lunch, date: today, isFutureDay: false, isTomorrow: false)
-            }
-            if minutes < BellSchedule.dinnerCutoff {
-                return MealPresentation(kind: .dinner, date: today, isFutureDay: false, isTomorrow: false)
-            }
+        guard let calendar else {
+            if minutes < BellSchedule.lunchCutoff { return current(.lunch, on: today) }
+            if minutes < BellSchedule.dinnerCutoff { return current(.dinner, on: today) }
+            return future(.lunch, on: today.adding(days: 1), relativeTo: today)
         }
-        return page(kind: .lunch, rolledOver: true, today: today, availableDays: availableDays)
+
+        if minutes < BellSchedule.lunchCutoff, calendar.serves(.lunch, on: today) {
+            return current(.lunch, on: today)
+        }
+        if minutes < BellSchedule.dinnerCutoff, calendar.serves(.dinner, on: today) {
+            return current(.dinner, on: today)
+        }
+
+        let candidates = [MealKind.lunch, .dinner].compactMap { kind -> MealPresentation? in
+            guard let date = calendar.nextDay(for: kind, after: today) else { return nil }
+            return future(kind, on: date, relativeTo: today)
+        }
+        return candidates.min(by: comesBefore) ?? current(.lunch, on: today)
     }
 
     private static func page(
         kind: MealKind,
         rolledOver: Bool,
         today: SchoolDate,
-        availableDays: Set<SchoolDate>
+        calendar: MealServiceCalendar?
     ) -> MealPresentation {
         guard rolledOver else {
-            return MealPresentation(kind: kind, date: today, isFutureDay: false, isTomorrow: false)
+            return current(kind, on: today)
         }
-        let tomorrow = today.adding(days: 1)
-        // Skip weekends and holidays so the page lands on a day that has food.
-        let target = (1...7)
-            .lazy
-            .map { today.adding(days: $0) }
-            .first { availableDays.contains($0) } ?? tomorrow
+        if let target = calendar?.nextDay(for: kind, after: today) {
+            return future(kind, on: target, relativeTo: today)
+        }
+        // With no snapshot, tomorrow is the best provisional answer. A known
+        // empty calendar stays on today rather than claiming an unpublished
+        // meal exists tomorrow.
+        guard calendar == nil else { return current(kind, on: today) }
+        return future(kind, on: today.adding(days: 1), relativeTo: today)
+    }
 
-        return MealPresentation(
+    private static func current(_ kind: MealKind, on date: SchoolDate) -> MealPresentation {
+        MealPresentation(kind: kind, date: date, isFutureDay: false, isTomorrow: false)
+    }
+
+    private static func future(
+        _ kind: MealKind,
+        on date: SchoolDate,
+        relativeTo today: SchoolDate
+    ) -> MealPresentation {
+        MealPresentation(
             kind: kind,
-            date: target,
+            date: date,
             isFutureDay: true,
-            isTomorrow: target == tomorrow
+            isTomorrow: date == today.adding(days: 1)
         )
+    }
+
+    private static func comesBefore(_ lhs: MealPresentation, _ rhs: MealPresentation) -> Bool {
+        if lhs.date != rhs.date { return lhs.date < rhs.date }
+        return lhs.kind.rawValue < rhs.kind.rawValue
     }
 }

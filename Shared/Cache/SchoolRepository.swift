@@ -3,10 +3,9 @@ import os
 
 /// Single source of truth for timetable and meal data.
 ///
-/// The repository always answers from disk first and refreshes behind that
-/// answer, so every surface — app, complication, Smart Stack — renders
-/// immediately and stays correct offline. Concurrent refresh requests share one
-/// network call rather than stacking up.
+/// Cache reads are exposed synchronously so launch and widget code can render
+/// immediately. Refresh calls return the fresh snapshot when possible, falling
+/// back to the cached value, and concurrent refreshes share one network call.
 actor SchoolRepository {
     static let shared = SchoolRepository()
 

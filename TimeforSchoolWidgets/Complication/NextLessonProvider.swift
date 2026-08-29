@@ -15,6 +15,11 @@ struct NextLessonProvider: TimelineProvider {
         // The gallery renders many widgets at once; it gets the sample rather
         // than a network round trip.
         guard !context.isPreview else { return completion(.placeholder) }
+        if let cached = SchoolRepository.cachedTimetable() {
+            completion(NextLessonEntry.resolve(at: .now, week: cached.week))
+            refresh(after: cached.fetchedAt)
+            return
+        }
         Task {
             let week = await SchoolRepository.shared.timetable()?.week
             completion(week.map { NextLessonEntry.resolve(at: .now, week: $0) } ?? .placeholder)
@@ -22,13 +27,29 @@ struct NextLessonProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<NextLessonEntry>) -> Void) {
+        let now = Date.now
+        if let cached = SchoolRepository.cachedTimetable() {
+            completion(Self.timeline(from: now, week: cached.week))
+            refresh(after: cached.fetchedAt)
+            return
+        }
         Task {
-            let now = Date.now
             guard let week = await SchoolRepository.shared.timetable()?.week else {
                 completion(Timeline(entries: [.placeholder], policy: .after(now.addingTimeInterval(30 * 60))))
                 return
             }
             completion(Self.timeline(from: now, week: week))
+        }
+    }
+
+    /// Return cached content first, then ask WidgetKit to rebuild only if the
+    /// background refresh actually produced a newer snapshot.
+    private func refresh(after fetchedAt: Date) {
+        Task {
+            guard let fresh = await SchoolRepository.shared.timetable(),
+                  fresh.fetchedAt != fetchedAt
+            else { return }
+            WidgetCenter.shared.reloadTimelines(ofKind: NextLessonWidget.kind)
         }
     }
 

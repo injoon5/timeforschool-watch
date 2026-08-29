@@ -12,7 +12,10 @@ struct MealsScreen: View {
 
     var body: some View {
         TimelineView(.everyMinute) { context in
-            let pages = MealPresentation.pages(now: SchoolClock.displayDate(context.date), availableDays: store.servedDays)
+            let pages = MealPresentation.pages(
+                now: SchoolClock.displayDate(context.date),
+                calendar: store.mealCalendar
+            )
 
             TabView(selection: $selection) {
                 ForEach(pages) { page in

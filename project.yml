@@ -86,6 +86,17 @@ targets:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
 
+  TimeforSchoolTests:
+    type: bundle.unit-test
+    platform: watchOS
+    sources:
+      - path: TimeforSchoolTests
+    dependencies:
+      - target: TimeforSchool
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   TimeforSchool:
     build:
@@ -96,3 +107,8 @@ schemes:
       config: Debug
     archive:
       config: Release
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - TimeforSchoolTests

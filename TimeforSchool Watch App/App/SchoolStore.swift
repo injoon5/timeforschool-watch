@@ -22,10 +22,10 @@ final class SchoolStore {
     private(set) var meals: MealSnapshot?
     private(set) var availability: TimetableAvailability
 
-    /// Days that actually serve lunch or dinner, used to skip weekends and
-    /// holidays when a meal page rolls over. Derived once per snapshot rather
-    /// than on every render — the meals screen reads it once a minute.
-    private(set) var servedDays: Set<SchoolDate>
+    /// Published dates for each meal service, used to skip weekends, holidays,
+    /// and lunch-only/dinner-only days. `nil` means nothing has loaded yet;
+    /// a non-optional empty value is a known no-menu response.
+    private(set) var mealCalendar: MealServiceCalendar?
 
     private let repository: SchoolRepository
     private var refreshTask: Task<Void, Never>?
@@ -41,7 +41,7 @@ final class SchoolStore {
 
         week = timetable?.week ?? .empty
         meals = mealCache
-        servedDays = mealCache?.servedDays() ?? []
+        mealCalendar = mealCache?.serviceCalendar()
         availability = timetable == nil ? .loading : .loaded
         timetableFetchedAt = timetable?.fetchedAt
         mealsFetchedAt = mealCache?.fetchedAt
@@ -68,7 +68,7 @@ final class SchoolStore {
             }
             if let freshMeals, freshMeals.fetchedAt != mealsFetchedAt {
                 meals = freshMeals
-                servedDays = freshMeals.servedDays()
+                mealCalendar = freshMeals.serviceCalendar()
                 mealsFetchedAt = freshMeals.fetchedAt
                 changed = true
             }
