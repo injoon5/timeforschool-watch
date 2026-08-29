@@ -8,7 +8,6 @@ struct TimetableList: View {
     /// Shared width of the teacher column, measured from the widest name so
     /// the three columns line up down the whole list.
     @State private var teacherColumnWidth: CGFloat = 0
-    @State private var scrollTarget: TimetableElement.ID?
     /// Set when the marker moves while the wearer is scrolling, and applied
     /// once they stop — recentring under a moving finger or crown would fight
     /// them for control of the list.
@@ -18,6 +17,12 @@ struct TimetableList: View {
     private var elements: [TimetableElement] { TimetableElement.build(from: presentation) }
 
     var body: some View {
+        ScrollViewReader { proxy in
+            scrollView(proxy)
+        }
+    }
+
+    private func scrollView(_ proxy: ScrollViewProxy) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Metrics.rowSpacing) {
                 // Slack above and below the list so *any* row can sit dead
@@ -36,26 +41,38 @@ struct TimetableList: View {
                 }
                 centeringSlack
             }
-            .scrollTargetLayout()
             .padding(.horizontal, Metrics.pageInset)
         }
-        .scrollPosition(id: $scrollTarget, anchor: .center)
         .onScrollPhaseChange { _, phase in
             isScrolling = phase.isScrolling
             guard !isScrolling, let deferredTarget else { return }
-            scrollTarget = deferredTarget
+            proxy.scrollTo(deferredTarget, anchor: .center)
             self.deferredTarget = nil
         }
-        .onChange(of: presentation.lessons) { _, _ in
+        .onChange(of: presentation.lessons, initial: true) { _, _ in
             teacherColumnWidth = 0
+            // On a first launch there is no cache, so the marker is aimed at
+            // while the list is still empty and there is nothing to scroll to.
+            // The lessons arriving is the moment to aim again, and the marker's
+            // id does not change between those two moments — which is why this
+            // is an imperative scroll rather than a `scrollPosition` binding:
+            // assigning a binding the value it already holds does nothing.
+            centre(with: proxy)
         }
-        .onChange(of: presentation.nowElementID, initial: true) { _, target in
-            guard !isScrolling else {
-                deferredTarget = target
-                return
-            }
-            scrollTarget = target
+        .onChange(of: presentation.nowElementID) { _, _ in
+            centre(with: proxy)
         }
+    }
+
+    /// Scrolls the live marker to the middle of the screen, unless the wearer
+    /// is scrolling — in which case it waits until they stop.
+    private func centre(with proxy: ScrollViewProxy) {
+        let target = presentation.nowElementID
+        guard !isScrolling else {
+            deferredTarget = target
+            return
+        }
+        proxy.scrollTo(target, anchor: .center)
     }
 
     /// Half a screen of empty space, sized against the page rather than a
