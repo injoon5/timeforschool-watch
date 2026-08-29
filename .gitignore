@@ -1,0 +1,8 @@
+build/
+DerivedData/
+*.xcuserdatad
+.DS_Store
+
+# Agent skills fetched from skills-lock.json; .claude/skills symlinks into .agents.
+.agents/
+.claude/

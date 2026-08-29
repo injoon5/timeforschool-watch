@@ -1,0 +1,98 @@
+name: TimeforSchool
+
+options:
+  bundleIdPrefix: school.timefor
+  createIntermediateGroups: true
+  deploymentTarget:
+    watchOS: "27.0"
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    DEAD_CODE_STRIPPING: YES
+    ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS: YES
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+  configs:
+    Release:
+      SWIFT_COMPILATION_MODE: wholemodule
+
+targets:
+  TimeforSchool:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Shared
+      - path: TimeforSchool Watch App
+        excludes:
+          - "Resources/Info.plist"
+          - "Resources/*.entitlements"
+          - "Resources/TimeforSchool.icon"
+      # Icon Composer bundle: added whole, never traversed into.
+      - path: TimeforSchool Watch App/Resources/TimeforSchool.icon
+        type: file
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_NAME: TimeforSchool
+        PRODUCT_BUNDLE_IDENTIFIER: school.timefor
+        ASSETCATALOG_COMPILER_APPICON_NAME: TimeforSchool
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: TimeforSchool Watch App/Resources/TimeforSchool.entitlements
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: "1.0"
+    info:
+      path: TimeforSchool Watch App/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: TimeforSchool
+        WKApplication: true
+        WKWatchOnly: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+        CFBundleURLTypes:
+          - CFBundleURLName: school.timefor
+            CFBundleURLSchemes:
+              - timeforschool
+    dependencies:
+      - target: TimeforSchoolWidgets
+
+  TimeforSchoolWidgets:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: Shared
+      - path: TimeforSchoolWidgets
+        excludes:
+          - "Resources/Info.plist"
+          - "Resources/*.entitlements"
+    settings:
+      base:
+        PRODUCT_NAME: TimeforSchoolWidgets
+        PRODUCT_BUNDLE_IDENTIFIER: school.timefor.widgets
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
+        CODE_SIGN_ENTITLEMENTS: TimeforSchoolWidgets/Resources/TimeforSchoolWidgets.entitlements
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: "1.0"
+    info:
+      path: TimeforSchoolWidgets/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: TimeforSchool
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+schemes:
+  TimeforSchool:
+    build:
+      targets:
+        TimeforSchool: all
+        TimeforSchoolWidgets: all
+    run:
+      config: Debug
+    archive:
+      config: Release
