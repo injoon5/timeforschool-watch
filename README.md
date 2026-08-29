@@ -4,6 +4,11 @@ A watchOS app that shows one class's daily timetable and school meals. Data
 comes from the [timefor.school](https://api.timefor.school) API. The app is
 fixed to school code `7010208`, grade 1, class 3. There is no settings screen.
 
+It is a standalone watch app (`WKWatchOnly`): there is no iOS companion target,
+and it installs and runs on the watch alone. Bundle identifiers are namespaced
+under `school.timefor.watch` so `school.timefor` stays free for an iOS app
+later.
+
 ## Requirements
 
 - Xcode 27 (watchOS 27 SDK)
@@ -105,7 +110,7 @@ meals. Tapping either opens the matching page through a `timeforschool://` URL.
 `SchoolRepository` is the single entry point for both the app and the widget
 extension. It reads from disk first and refreshes behind that result, so every
 surface renders immediately and keeps working offline. Snapshots are JSON files
-in the `group.school.timefor` app group container, falling back to the caches
+in the `group.school.timefor.watch` app group container, falling back to the caches
 directory when the app group is unavailable.
 
 - Timetable: refreshed when the cached copy is older than 4 hours or was
@@ -174,5 +179,5 @@ In DEBUG builds, `TFS_TIME_OFFSET_MINUTES` shifts the clock the UI renders
 against. This makes every state of the day reachable without waiting.
 
 ```
-SIMCTL_CHILD_TFS_TIME_OFFSET_MINUTES=2124 xcrun simctl launch booted school.timefor
+SIMCTL_CHILD_TFS_TIME_OFFSET_MINUTES=2124 xcrun simctl launch booted school.timefor.watch
 ```

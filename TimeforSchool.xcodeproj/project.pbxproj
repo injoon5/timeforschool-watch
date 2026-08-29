@@ -640,7 +640,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch.widgets;
 				PRODUCT_NAME = TimeforSchoolWidgets;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -662,7 +662,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch.widgets;
 				PRODUCT_NAME = TimeforSchoolWidgets;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -679,7 +679,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = "TimeforSchool Watch App/Resources/Info.plist";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = school.timefor;
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch;
 				PRODUCT_NAME = TimeforSchool;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -766,7 +766,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = "TimeforSchool Watch App/Resources/Info.plist";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = school.timefor;
+				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch;
 				PRODUCT_NAME = TimeforSchool;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

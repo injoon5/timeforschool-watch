@@ -1,7 +1,7 @@
 name: TimeforSchool
 
 options:
-  bundleIdPrefix: school.timefor
+  bundleIdPrefix: school.timefor.watch
   createIntermediateGroups: true
   deploymentTarget:
     watchOS: "27.0"
@@ -39,7 +39,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: TimeforSchool
-        PRODUCT_BUNDLE_IDENTIFIER: school.timefor
+        PRODUCT_BUNDLE_IDENTIFIER: school.timefor.watch
         ASSETCATALOG_COMPILER_APPICON_NAME: TimeforSchool
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: TimeforSchool Watch App/Resources/TimeforSchool.entitlements
@@ -55,7 +55,7 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationPortraitUpsideDown
         CFBundleURLTypes:
-          - CFBundleURLName: school.timefor
+          - CFBundleURLName: school.timefor.watch
             CFBundleURLSchemes:
               - timeforschool
     dependencies:
@@ -73,7 +73,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: TimeforSchoolWidgets
-        PRODUCT_BUNDLE_IDENTIFIER: school.timefor.widgets
+        PRODUCT_BUNDLE_IDENTIFIER: school.timefor.watch.widgets
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
         CODE_SIGN_ENTITLEMENTS: TimeforSchoolWidgets/Resources/TimeforSchoolWidgets.entitlements

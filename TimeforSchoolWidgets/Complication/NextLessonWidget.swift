@@ -3,7 +3,7 @@ import WidgetKit
 
 /// A complication showing the lesson the wearer is in, or the one coming next.
 struct NextLessonWidget: Widget {
-    static let kind = "school.timefor.NextLesson"
+    static let kind = "school.timefor.watch.NextLesson"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: NextLessonProvider()) { entry in

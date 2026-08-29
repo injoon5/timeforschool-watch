@@ -10,7 +10,7 @@ actor SchoolAPI {
     static let shared = SchoolAPI()
 
     private let session: URLSession
-    private let logger = Logger(subsystem: "school.timefor", category: "network")
+    private let logger = Logger(subsystem: "school.timefor.watch", category: "network")
 
     init() {
         let configuration = URLSessionConfiguration.default

@@ -12,7 +12,7 @@ actor SchoolRepository {
 
     private let api: SchoolAPI
     private let identity: SchoolIdentity
-    private let logger = Logger(subsystem: "school.timefor", category: "repository")
+    private let logger = Logger(subsystem: "school.timefor.watch", category: "repository")
 
     private var timetableRefresh: Task<TimetableSnapshot?, Never>?
     private var mealRefresh: Task<MealSnapshot?, Never>?

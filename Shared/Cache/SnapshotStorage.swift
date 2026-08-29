@@ -8,9 +8,9 @@ import os
 /// instead of flashing an empty list. Writes are atomic so a widget can never
 /// observe a half-written file.
 enum SnapshotStorage {
-    static let appGroup = "group.school.timefor"
+    static let appGroup = "group.school.timefor.watch"
 
-    private static let logger = Logger(subsystem: "school.timefor", category: "cache")
+    private static let logger = Logger(subsystem: "school.timefor.watch", category: "cache")
 
     private static let directory: URL = {
         let base = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
