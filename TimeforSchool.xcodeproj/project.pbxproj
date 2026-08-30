@@ -65,6 +65,7 @@
 		AE022AD59D67906341ED9FB9 /* APIErrorEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB028BFB25DBDF182C73350F /* APIErrorEnvelope.swift */; };
 		B57DD1E6CD8DF9988C76E8A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1DD91B7246EC3BCA98FB29 /* Assets.xcassets */; };
 		BE28E57A0DA6EB2BDC657E54 /* MealPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04D4C41B50033DE8E049F5F /* MealPage.swift */; };
+		C0699DA76EC937EA3711C402 /* TimetableScrollTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCD7633B68E20D710099098 /* TimetableScrollTargetTests.swift */; };
 		C176AAA1F0FB74D06B6748B3 /* MealWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */; };
 		C3A107AEF47C1B9A645CB06C /* BellSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4BCC330EE2C1BA22BE0F16 /* BellSchedule.swift */; };
 		C543F8664AD61BDFFDDC2C0E /* SchoolEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64338BD1749383E92C059C18 /* SchoolEndpoint.swift */; };
@@ -136,6 +137,7 @@
 		4716679A0A1544E74C10C29A /* SchoolClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolClock.swift; sourceTree = "<group>"; };
 		47C74FAE6E784C3D5981A7C2 /* SchoolSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolSchedule.swift; sourceTree = "<group>"; };
 		4835C74160CC3241201753D7 /* TimetableScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableScreen.swift; sourceTree = "<group>"; };
+		4BCD7633B68E20D710099098 /* TimetableScrollTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableScrollTargetTests.swift; sourceTree = "<group>"; };
 		4BD5E333AC386606434CDA0D /* SchoolStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolStore.swift; sourceTree = "<group>"; };
 		4CE870852408B805E268A8F6 /* TimetableElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableElement.swift; sourceTree = "<group>"; };
 		4FF7BEB23B27DBBAFFE9B5F1 /* SchoolWeek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolWeek.swift; sourceTree = "<group>"; };
@@ -303,6 +305,7 @@
 			children = (
 				BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */,
 				388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */,
+				4BCD7633B68E20D710099098 /* TimetableScrollTargetTests.swift */,
 			);
 			path = TimeforSchoolTests;
 			sourceTree = "<group>";
@@ -523,6 +526,7 @@
 			files = (
 				FED0851531F5F79CD2ECA18D /* BellScheduleTests.swift in Sources */,
 				957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */,
+				C0699DA76EC937EA3711C402 /* TimetableScrollTargetTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

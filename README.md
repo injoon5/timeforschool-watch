@@ -51,9 +51,9 @@ One marker shows the current position in the day:
 | After the last lesson | A blue dot below the list |
 
 The break rule occupies no layout height, so rows do not shift when a break
-starts. The list scrolls so the marker is centred when the screen opens.
-Re-centring is skipped while the list is being scrolled and applied once
-scrolling stops.
+starts. Current lesson rows and break rules are centred when the screen opens;
+the start and end dots rest at the natural top and bottom edges. Repositioning
+is skipped while the list is being scrolled and applied once scrolling stops.
 
 After 17:00, and all weekend, the page shows the next school day and flags it
 in yellow. Lessons marked as replaced by the API are shown in yellow.

@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Lays out one school day and keeps the live marker centred on screen.
+/// Lays out one school day and keeps the active row or break marker centred.
+/// Terminus dots rest at the natural top or bottom edge instead.
 struct TimetableList: View {
     let presentation: TimetablePresentation
     let availability: TimetableAvailability
@@ -25,10 +26,7 @@ struct TimetableList: View {
     private func scrollView(_ proxy: ScrollViewProxy) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Metrics.rowSpacing) {
-                // Slack above and below the list so *any* row can sit dead
-                // centre — otherwise the first and last periods would never
-                // reach the middle of the screen.
-                centeringSlack
+                centeringSlack(fraction: centeringSlackFraction)
                 DayHeader(presentation: presentation)
                     .padding(.bottom, 2)
 
@@ -39,49 +37,57 @@ struct TimetableList: View {
                         row(for: element)
                     }
                 }
-                centeringSlack
+                centeringSlack(fraction: centeringSlackFraction)
             }
             .padding(.horizontal, Metrics.pageInset)
         }
         .onScrollPhaseChange { _, phase in
             isScrolling = phase.isScrolling
             guard !isScrolling, let deferredTarget else { return }
-            proxy.scrollTo(deferredTarget, anchor: .center)
+            proxy.scrollTo(deferredTarget, anchor: scrollAnchor)
             self.deferredTarget = nil
         }
         .onChange(of: presentation.lessons, initial: true) { _, _ in
             teacherColumnWidth = 0
-            // On a first launch there is no cache, so the marker is aimed at
-            // while the list is still empty and there is nothing to scroll to.
-            // The lessons arriving is the moment to aim again, and the marker's
-            // id does not change between those two moments — which is why this
-            // is an imperative scroll rather than a `scrollPosition` binding:
-            // assigning a binding the value it already holds does nothing.
-            centre(with: proxy)
+            positionMarker(with: proxy)
         }
-        .onChange(of: presentation.nowElementID) { _, _ in
-            centre(with: proxy)
+        .onChange(of: presentation.scrollTargetElementID) { _, _ in
+            positionMarker(with: proxy)
         }
     }
 
-    /// Scrolls the live marker to the middle of the screen, unless the wearer
-    /// is scrolling — in which case it waits until they stop.
-    private func centre(with proxy: ScrollViewProxy) {
-        let target = presentation.nowElementID
+    /// Centres active lessons and breaks, and rests the end dot at the bottom.
+    /// The start dot needs no scroll because it is already at the natural top.
+    private func positionMarker(with proxy: ScrollViewProxy) {
+        guard let target = presentation.scrollTargetElementID else {
+            deferredTarget = nil
+            return
+        }
         guard !isScrolling else {
             deferredTarget = target
             return
         }
-        proxy.scrollTo(target, anchor: .center)
+        proxy.scrollTo(target, anchor: scrollAnchor)
     }
 
-    /// Half a screen of empty space, sized against the page rather than a
-    /// guessed constant so it holds on every watch size.
-    private var centeringSlack: some View {
+    /// Space that lets the first and last lesson rows reach the centre. Dot
+    /// states set this to zero because they use the list's natural edges.
+    private func centeringSlack(fraction: Double) -> some View {
         Color.clear
             .frame(height: 1)
-            .containerRelativeFrame(.vertical) { height, _ in height * 0.38 }
+            .containerRelativeFrame(.vertical) { height, _ in height * fraction }
             .accessibilityHidden(true)
+    }
+
+    private var centeringSlackFraction: Double {
+        switch presentation.indicator {
+        case .duringLesson, .duringBreak: 0.38
+        case .beforeFirstLesson, .afterLastLesson: 0
+        }
+    }
+
+    private var scrollAnchor: UnitPoint {
+        presentation.indicator == .afterLastLesson ? .bottom : .center
     }
 
     @ViewBuilder
