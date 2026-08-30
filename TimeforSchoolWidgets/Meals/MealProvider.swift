@@ -51,6 +51,7 @@ struct MealProvider: TimelineProvider {
                   fresh.fetchedAt != fetchedAt
             else { return }
             WidgetCenter.shared.reloadTimelines(ofKind: MealWidget.kind)
+            WidgetCenter.shared.reloadTimelines(ofKind: MealComplication.kind)
         }
     }
 

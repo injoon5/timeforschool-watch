@@ -49,11 +49,12 @@ struct NextLessonProvider: TimelineProvider {
             guard let fresh = await SchoolRepository.shared.timetable(),
                   fresh.fetchedAt != fetchedAt
             else { return }
+            WidgetCenter.shared.reloadTimelines(ofKind: NextLessonComplication.kind)
             WidgetCenter.shared.reloadTimelines(ofKind: NextLessonWidget.kind)
         }
     }
 
-    /// Surfaces the complication in the Smart Stack around the school day.
+    /// Surfaces the lesson widget in the Smart Stack around the school day.
     func relevance() async -> WidgetRelevance<Void> {
         let now = Date.now
         let day = SchoolClock.schoolDayOnOrAfter(now)

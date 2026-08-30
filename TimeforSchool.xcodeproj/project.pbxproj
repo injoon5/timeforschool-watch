@@ -51,7 +51,11 @@
 		88576BED735D508F54445006 /* NowMarkers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BEAF28023BBD35C6A39A87 /* NowMarkers.swift */; };
 		8A27F966A1F4732391E523B1 /* SchoolAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50823030D7E8FF5193348BBD /* SchoolAPI.swift */; };
 		8D99C1785E3C15675C0140DB /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52107D962D8D7345EE96594D /* DeepLink.swift */; };
-		8FB517256C930199FA37D6DF /* NextLessonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355AC1DEDB865C077E13B2E4 /* NextLessonView.swift */; };
+		8FB517256C930199FA37D6DF /* NextLessonWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */; };
+		A10000000000000000000011 /* NextLessonComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* NextLessonComplication.swift */; };
+		A10000000000000000000012 /* NextLessonComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* NextLessonComplicationView.swift */; };
+		A10000000000000000000013 /* MealComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* MealComplication.swift */; };
+		A10000000000000000000014 /* MealComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* MealComplicationView.swift */; };
 		957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */; };
 		98125B8E78ABEB40F6DE5C8A /* SchoolIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */; };
 		9D11A381740056B641BD36BD /* SchoolClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4716679A0A1544E74C10C29A /* SchoolClock.swift */; };
@@ -132,7 +136,7 @@
 		31F8040715BE0714668006B1 /* MealWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidget.swift; sourceTree = "<group>"; };
 		33A9E573F01BD081A961ED2C /* Snapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snapshots.swift; sourceTree = "<group>"; };
 		348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealServiceCalendar.swift; sourceTree = "<group>"; };
-		355AC1DEDB865C077E13B2E4 /* NextLessonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonView.swift; sourceTree = "<group>"; };
+		355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonWidgetView.swift; sourceTree = "<group>"; };
 		388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPresentationTests.swift; sourceTree = "<group>"; };
 		4716679A0A1544E74C10C29A /* SchoolClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolClock.swift; sourceTree = "<group>"; };
 		47C74FAE6E784C3D5981A7C2 /* SchoolSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolSchedule.swift; sourceTree = "<group>"; };
@@ -156,6 +160,10 @@
 		8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = TimeforSchool.icon; sourceTree = "<group>"; };
 		90E33D83A6BED4DD302090DC /* SnapshotStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotStorage.swift; sourceTree = "<group>"; };
 		94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidgetView.swift; sourceTree = "<group>"; };
+		A10000000000000000000001 /* NextLessonComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplication.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* NextLessonComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplicationView.swift; sourceTree = "<group>"; };
+		A10000000000000000000003 /* MealComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplication.swift; sourceTree = "<group>"; };
+		A10000000000000000000004 /* MealComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplicationView.swift; sourceTree = "<group>"; };
 		95069F5AA1EB813187782FDD /* MealTextCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTextCleaner.swift; sourceTree = "<group>"; };
 		A306BD31C6680F8551A5A7AC /* DayHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeader.swift; sourceTree = "<group>"; };
 		A45400F46802DBBF3119C55C /* DayIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayIndicator.swift; sourceTree = "<group>"; };
@@ -241,6 +249,8 @@
 			children = (
 				E750F9B835B75827441A0C76 /* MealEntry.swift */,
 				CB6ACDB0320A36FFA0B60A4D /* MealProvider.swift */,
+				A10000000000000000000003 /* MealComplication.swift */,
+				A10000000000000000000004 /* MealComplicationView.swift */,
 				31F8040715BE0714668006B1 /* MealWidget.swift */,
 				94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */,
 			);
@@ -260,8 +270,10 @@
 			children = (
 				E2855B33288F2C317D5784E6 /* NextLessonEntry.swift */,
 				503D98E8F86198B45B0CE72D /* NextLessonProvider.swift */,
-				355AC1DEDB865C077E13B2E4 /* NextLessonView.swift */,
+				A10000000000000000000001 /* NextLessonComplication.swift */,
+				A10000000000000000000002 /* NextLessonComplicationView.swift */,
 				EBC7389201879B86164FFD06 /* NextLessonWidget.swift */,
+				355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */,
 			);
 			path = Complication;
 			sourceTree = "<group>";
@@ -590,10 +602,14 @@
 				003C9A3D8089003E342A1191 /* MealTextCleaner.swift in Sources */,
 				41779272C8EF958B8FE14FE7 /* MealWidget.swift in Sources */,
 				C176AAA1F0FB74D06B6748B3 /* MealWidgetView.swift in Sources */,
+				A10000000000000000000013 /* MealComplication.swift in Sources */,
+				A10000000000000000000014 /* MealComplicationView.swift in Sources */,
 				C67D87452514889E8A0FDD60 /* Metrics.swift in Sources */,
 				9FC109A3AD1BAADAAF637E96 /* NextLessonEntry.swift in Sources */,
 				ACB68C60E563F589443F6860 /* NextLessonProvider.swift in Sources */,
-				8FB517256C930199FA37D6DF /* NextLessonView.swift in Sources */,
+				A10000000000000000000011 /* NextLessonComplication.swift in Sources */,
+				A10000000000000000000012 /* NextLessonComplicationView.swift in Sources */,
+				8FB517256C930199FA37D6DF /* NextLessonWidgetView.swift in Sources */,
 				4128952EFB3E31CF8267ABA0 /* NextLessonWidget.swift in Sources */,
 				33D38BF6C3D1092A0C8C90D2 /* Palette.swift in Sources */,
 				9E5549FFE951EA3EC1EB9BEC /* SchoolAPI.swift in Sources */,

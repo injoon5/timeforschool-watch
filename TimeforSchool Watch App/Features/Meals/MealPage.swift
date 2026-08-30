@@ -25,6 +25,7 @@ struct MealPage: View {
             .padding(.bottom, 28)  // clears the page indicator
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .containerBackground(Palette.pageBackground(Palette.meal), for: .tabView)
     }
 
