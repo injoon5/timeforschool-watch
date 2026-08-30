@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -153,7 +153,7 @@
 		7919AACD95B74408027BB087 /* TimetableEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEmptyState.swift; sourceTree = "<group>"; };
 		7C2079D183F2D3AA565370F6 /* MealHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealHeader.swift; sourceTree = "<group>"; };
 		7CA535F197D82441688BA9B8 /* SchoolRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolRepository.swift; sourceTree = "<group>"; };
-		8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */ = {isa = PBXFileReference; path = TimeforSchool.icon; sourceTree = "<group>"; };
+		8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = TimeforSchool.icon; sourceTree = "<group>"; };
 		90E33D83A6BED4DD302090DC /* SnapshotStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotStorage.swift; sourceTree = "<group>"; };
 		94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidgetView.swift; sourceTree = "<group>"; };
 		95069F5AA1EB813187782FDD /* MealTextCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTextCleaner.swift; sourceTree = "<group>"; };
@@ -465,15 +465,12 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					3E59E3E0DE89FC83C1EAEFE0 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					8A7A05033A2AC497F3611B8C = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					BCD69C0B550C951141352A08 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -488,7 +485,6 @@
 			);
 			mainGroup = B39819F4593627ED967BD866;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -637,6 +633,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -655,6 +652,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -739,6 +737,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = TimeforSchoolWidgets/Resources/TimeforSchoolWidgets.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				INFOPLIST_FILE = TimeforSchoolWidgets/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -761,6 +760,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = TimeforSchoolWidgets/Resources/TimeforSchoolWidgets.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				INFOPLIST_FILE = TimeforSchoolWidgets/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -783,6 +783,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "TimeforSchool Watch App/Resources/TimeforSchool.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				INFOPLIST_FILE = "TimeforSchool Watch App/Resources/Info.plist";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch;
@@ -870,6 +871,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "TimeforSchool Watch App/Resources/TimeforSchool.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3V6F4PZ8J;
 				INFOPLIST_FILE = "TimeforSchool Watch App/Resources/Info.plist";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = school.timefor.watch;
