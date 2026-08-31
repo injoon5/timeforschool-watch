@@ -35,6 +35,12 @@ struct NextLessonEntry: TimelineEntry {
     /// When the break before an upcoming lesson began, so the card can fill a
     /// progress track across the break the same way it does across a lesson.
     let breakStartedAt: Date?
+    /// How long the gap after the focused lesson runs, in minutes. A lesson in
+    /// progress counts down to that gap rather than to itself — what the
+    /// wearer is waiting for is the break, not the bell — so the card has to
+    /// know whether the gap is the lunch hour or a few minutes between rooms.
+    /// `nil` when the focus closes the day and there is no gap to name.
+    let breakAfterLength: Int?
     /// `true` when the focused lesson closes the day.
     let isLastLesson: Bool
     /// "내일", "월요일" — set only when the card has jumped to a later day.
@@ -55,6 +61,7 @@ struct NextLessonEntry: TimelineEntry {
         startsAt: Date?,
         endsAt: Date?,
         breakStartedAt: Date? = nil,
+        breakAfterLength: Int? = nil,
         isLastLesson: Bool = false,
         dayLabel: String? = nil,
         dayProgress: CGFloat = 0.5,
@@ -67,6 +74,7 @@ struct NextLessonEntry: TimelineEntry {
         self.startsAt = startsAt
         self.endsAt = endsAt
         self.breakStartedAt = breakStartedAt
+        self.breakAfterLength = breakAfterLength
         self.isLastLesson = isLastLesson
         self.dayLabel = dayLabel
         self.dayProgress = dayProgress
@@ -84,6 +92,7 @@ struct NextLessonEntry: TimelineEntry {
         ],
         startsAt: .now.addingTimeInterval(-27 * 60),
         endsAt: .now.addingTimeInterval(23 * 60),
+        breakAfterLength: 10,
         countdownTarget: .now.addingTimeInterval(23 * 60)
     )
 
@@ -129,11 +138,26 @@ struct NextLessonEntry: TimelineEntry {
             startsAt: startsAt,
             endsAt: endsAt,
             breakStartedAt: breakStartedAt,
+            breakAfterLength: breakAfterLength(of: lesson, in: lessons, bells: week.bellSchedule),
             isLastLesson: lesson != nil && lesson?.period == lessons.last?.period,
             dayLabel: presentation.isFutureDay ? dayLabel(for: presentation) : nil,
             dayProgress: dayProgress(of: lesson, in: lessons),
             countdownTarget: countdownTarget
         )
+    }
+
+    /// The gap between the focused lesson and the one after it, in minutes.
+    /// Read off the bell schedule rather than the clock, so it is the same
+    /// number at every moment of the lesson.
+    static func breakAfterLength(of focus: Lesson?, in lessons: [Lesson], bells: BellSchedule) -> Int? {
+        guard let focus,
+              let index = lessons.firstIndex(where: { $0.period == focus.period }),
+              lessons.indices.contains(index + 1),
+              let end = bells.end(of: focus.period),
+              let next = bells.start(of: lessons[index + 1].period),
+              next > end
+        else { return nil }
+        return next - end
     }
 
     /// The focus and its two neighbours, focus in the middle.

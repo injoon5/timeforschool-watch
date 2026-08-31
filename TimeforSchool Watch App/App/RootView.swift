@@ -5,7 +5,7 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(SchoolStore.self) private var store
 
-    @State private var page: RootPage = .timetable
+    @State private var page: RootPage = .launchPage
 
     var body: some View {
         NavigationStack {
@@ -54,6 +54,20 @@ struct RootView: View {
         case .meals:
             MealsScreen()
         }
+    }
+}
+
+extension RootPage {
+    /// The page the app opens on. Normally the timetable; in DEBUG builds
+    /// `TFS_START_PAGE=meals` opens the other one, which is the only way to
+    /// reach it from the command line — the watch simulator does not route
+    /// `timeforschool://` URLs.
+    static var launchPage: RootPage {
+        #if DEBUG
+        ProcessInfo.processInfo.environment["TFS_START_PAGE"] == "meals" ? .meals : .timetable
+        #else
+        .timetable
+        #endif
     }
 }
 

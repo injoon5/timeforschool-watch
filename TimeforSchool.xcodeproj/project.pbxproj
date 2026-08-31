@@ -30,6 +30,7 @@
 		362AF8CDB8C86D250942DF86 /* MealDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F0CFF7F9E6740702D9B9E5 /* MealDTO.swift */; };
 		38C3887084E504B0331D1FCA /* MealsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB748F5AF25C966F00E785CE /* MealsScreen.swift */; };
 		3E5ABE6EA4C6D9A0CB23CE16 /* MealServiceCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */; };
+		3EEB4DEDD6BC2EA3316C16A9 /* MealComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882E51A9BEB57EEFA8063DEA /* MealComplicationView.swift */; };
 		3FCBBE89484F1C0DFDE9755C /* BellSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C4BCC330EE2C1BA22BE0F16 /* BellSchedule.swift */; };
 		409E92AD40605C0E1F3CC13C /* DayIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A45400F46802DBBF3119C55C /* DayIndicator.swift */; };
 		4128952EFB3E31CF8267ABA0 /* NextLessonWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC7389201879B86164FFD06 /* NextLessonWidget.swift */; };
@@ -47,15 +48,11 @@
 		645913C4077E2486F608E06B /* MealTextCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95069F5AA1EB813187782FDD /* MealTextCleaner.swift */; };
 		7128BD83DF5E05C4FC8818DA /* TimetableEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7919AACD95B74408027BB087 /* TimetableEmptyState.swift */; };
 		7224CF2B023504823C07950D /* SnapshotStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E33D83A6BED4DD302090DC /* SnapshotStorage.swift */; };
+		78E5FBBBCE39C512B9A249F5 /* TimetableDTOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDD00CE0899323D27146356 /* TimetableDTOTests.swift */; };
 		82AC25BD66F7F7F18C6FB74F /* LessonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECCDAE1A46C462304A0078 /* LessonRow.swift */; };
 		88576BED735D508F54445006 /* NowMarkers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BEAF28023BBD35C6A39A87 /* NowMarkers.swift */; };
 		8A27F966A1F4732391E523B1 /* SchoolAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50823030D7E8FF5193348BBD /* SchoolAPI.swift */; };
 		8D99C1785E3C15675C0140DB /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52107D962D8D7345EE96594D /* DeepLink.swift */; };
-		8FB517256C930199FA37D6DF /* NextLessonWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */; };
-		A10000000000000000000011 /* NextLessonComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* NextLessonComplication.swift */; };
-		A10000000000000000000012 /* NextLessonComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* NextLessonComplicationView.swift */; };
-		A10000000000000000000013 /* MealComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* MealComplication.swift */; };
-		A10000000000000000000014 /* MealComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* MealComplicationView.swift */; };
 		957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */; };
 		98125B8E78ABEB40F6DE5C8A /* SchoolIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8446554C370B15F4AC8C6 /* SchoolIdentity.swift */; };
 		9D11A381740056B641BD36BD /* SchoolClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4716679A0A1544E74C10C29A /* SchoolClock.swift */; };
@@ -63,6 +60,7 @@
 		9FC109A3AD1BAADAAF637E96 /* NextLessonEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2855B33288F2C317D5784E6 /* NextLessonEntry.swift */; };
 		A0A5E9E80B9A954BA373BEC9 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCCDA3EE0F36996F63192F0 /* Palette.swift */; };
 		A212A0593B84C88B4D6962DC /* DayHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A306BD31C6680F8551A5A7AC /* DayHeader.swift */; };
+		A2FEAD816E41BA9B2F351D00 /* MealComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4404FEAEBEF3DA95AC517A /* MealComplication.swift */; };
 		A590C635FD99DDAEC4C04CA9 /* MealHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2079D183F2D3AA565370F6 /* MealHeader.swift */; };
 		A70402F1F2756FFD27706E46 /* SnapshotStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E33D83A6BED4DD302090DC /* SnapshotStorage.swift */; };
 		ACB68C60E563F589443F6860 /* NextLessonProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503D98E8F86198B45B0CE72D /* NextLessonProvider.swift */; };
@@ -80,11 +78,14 @@
 		CCB946F22B890DB0C6E62986 /* MealEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E750F9B835B75827441A0C76 /* MealEntry.swift */; };
 		CCC8FA8CC6B377056B608D9D /* SchoolRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA535F197D82441688BA9B8 /* SchoolRepository.swift */; };
 		CDA0E5DBD80A7CD2E3807A3D /* SchoolSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C74FAE6E784C3D5981A7C2 /* SchoolSchedule.swift */; };
+		CE031C5C553E7CE30CAAB468 /* NextLessonComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E56E7533083B621806BB9F5 /* NextLessonComplication.swift */; };
 		D0948E7961307AAD65C33524 /* TimeforSchoolWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DD9B185B7B7ABA62885FBA55 /* TimeforSchoolWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D10DFE36F7EEC9F4E75DE294 /* Snapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A9E573F01BD081A961ED2C /* Snapshots.swift */; };
+		D2BF4D7E8CD531BAF76B5C5F /* NextLessonComplicationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E85179025419EA51D866F346 /* NextLessonComplicationView.swift */; };
 		D97D5809197132BECD036445 /* APIErrorEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB028BFB25DBDF182C73350F /* APIErrorEnvelope.swift */; };
 		E0AFBD9D520ADFE513757A92 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180945E8C8C0E39C0ACBD9C0 /* Typography.swift */; };
 		E37378177C3E889596DED8AF /* TimetableList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62DC07D5C6EBE30882EB9BB6 /* TimetableList.swift */; };
+		E5D9A408BC1EDA622513667F /* NextLessonWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E250E74AC550D0DACDD604 /* NextLessonWidgetView.swift */; };
 		E6EB06526F86E141CDD30387 /* TimeforSchoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C84393891CF144640514730 /* TimeforSchoolApp.swift */; };
 		E9BC022AA195F535D23556D7 /* TimeforSchool.icon in Resources */ = {isa = PBXBuildFile; fileRef = 8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */; };
 		EBAB5E47CAB70B862BF270F3 /* AdvisoryMarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7E3092B0D4C50CFB5C28A3 /* AdvisoryMarks.swift */; };
@@ -132,11 +133,13 @@
 		180945E8C8C0E39C0ACBD9C0 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		21BEAF28023BBD35C6A39A87 /* NowMarkers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowMarkers.swift; sourceTree = "<group>"; };
 		2A1DD91B7246EC3BCA98FB29 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2C4404FEAEBEF3DA95AC517A /* MealComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplication.swift; sourceTree = "<group>"; };
 		2C84393891CF144640514730 /* TimeforSchoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeforSchoolApp.swift; sourceTree = "<group>"; };
+		2E56E7533083B621806BB9F5 /* NextLessonComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplication.swift; sourceTree = "<group>"; };
 		31F8040715BE0714668006B1 /* MealWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidget.swift; sourceTree = "<group>"; };
 		33A9E573F01BD081A961ED2C /* Snapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snapshots.swift; sourceTree = "<group>"; };
 		348C35E5AC1D5D051EDD42B6 /* MealServiceCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealServiceCalendar.swift; sourceTree = "<group>"; };
-		355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonWidgetView.swift; sourceTree = "<group>"; };
+		34E250E74AC550D0DACDD604 /* NextLessonWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonWidgetView.swift; sourceTree = "<group>"; };
 		388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPresentationTests.swift; sourceTree = "<group>"; };
 		4716679A0A1544E74C10C29A /* SchoolClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolClock.swift; sourceTree = "<group>"; };
 		47C74FAE6E784C3D5981A7C2 /* SchoolSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolSchedule.swift; sourceTree = "<group>"; };
@@ -157,13 +160,10 @@
 		7919AACD95B74408027BB087 /* TimetableEmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEmptyState.swift; sourceTree = "<group>"; };
 		7C2079D183F2D3AA565370F6 /* MealHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealHeader.swift; sourceTree = "<group>"; };
 		7CA535F197D82441688BA9B8 /* SchoolRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolRepository.swift; sourceTree = "<group>"; };
+		882E51A9BEB57EEFA8063DEA /* MealComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplicationView.swift; sourceTree = "<group>"; };
 		8C9B35A38ECA7391A8E4B1A3 /* TimeforSchool.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = TimeforSchool.icon; sourceTree = "<group>"; };
 		90E33D83A6BED4DD302090DC /* SnapshotStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotStorage.swift; sourceTree = "<group>"; };
 		94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealWidgetView.swift; sourceTree = "<group>"; };
-		A10000000000000000000001 /* NextLessonComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplication.swift; sourceTree = "<group>"; };
-		A10000000000000000000002 /* NextLessonComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplicationView.swift; sourceTree = "<group>"; };
-		A10000000000000000000003 /* MealComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplication.swift; sourceTree = "<group>"; };
-		A10000000000000000000004 /* MealComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealComplicationView.swift; sourceTree = "<group>"; };
 		95069F5AA1EB813187782FDD /* MealTextCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTextCleaner.swift; sourceTree = "<group>"; };
 		A306BD31C6680F8551A5A7AC /* DayHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayHeader.swift; sourceTree = "<group>"; };
 		A45400F46802DBBF3119C55C /* DayIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayIndicator.swift; sourceTree = "<group>"; };
@@ -171,6 +171,7 @@
 		A8314A3651DA432B0C90A254 /* TimeforSchoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimeforSchoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA96C3D9DDC6AC251599043A /* Lesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lesson.swift; sourceTree = "<group>"; };
 		AC76821B7EB63E640991EAFF /* SchoolLocale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolLocale.swift; sourceTree = "<group>"; };
+		ADDD00CE0899323D27146356 /* TimetableDTOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableDTOTests.swift; sourceTree = "<group>"; };
 		BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BellScheduleTests.swift; sourceTree = "<group>"; };
 		BB748F5AF25C966F00E785CE /* MealsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsScreen.swift; sourceTree = "<group>"; };
 		CB6ACDB0320A36FFA0B60A4D /* MealProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealProvider.swift; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 		E04D4C41B50033DE8E049F5F /* MealPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPage.swift; sourceTree = "<group>"; };
 		E2855B33288F2C317D5784E6 /* NextLessonEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonEntry.swift; sourceTree = "<group>"; };
 		E750F9B835B75827441A0C76 /* MealEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealEntry.swift; sourceTree = "<group>"; };
+		E85179025419EA51D866F346 /* NextLessonComplicationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonComplicationView.swift; sourceTree = "<group>"; };
 		E9151483151DBA9C482733CA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		EB7E3092B0D4C50CFB5C28A3 /* AdvisoryMarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvisoryMarks.swift; sourceTree = "<group>"; };
 		EBC7389201879B86164FFD06 /* NextLessonWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextLessonWidget.swift; sourceTree = "<group>"; };
@@ -247,10 +249,10 @@
 		3F4D71E76E190BAB540E843B /* Meals */ = {
 			isa = PBXGroup;
 			children = (
+				2C4404FEAEBEF3DA95AC517A /* MealComplication.swift */,
+				882E51A9BEB57EEFA8063DEA /* MealComplicationView.swift */,
 				E750F9B835B75827441A0C76 /* MealEntry.swift */,
 				CB6ACDB0320A36FFA0B60A4D /* MealProvider.swift */,
-				A10000000000000000000003 /* MealComplication.swift */,
-				A10000000000000000000004 /* MealComplicationView.swift */,
 				31F8040715BE0714668006B1 /* MealWidget.swift */,
 				94C8A1331893741C5DA71DC6 /* MealWidgetView.swift */,
 			);
@@ -268,12 +270,12 @@
 		79B0AEC5B1452F9318696935 /* Complication */ = {
 			isa = PBXGroup;
 			children = (
+				2E56E7533083B621806BB9F5 /* NextLessonComplication.swift */,
+				E85179025419EA51D866F346 /* NextLessonComplicationView.swift */,
 				E2855B33288F2C317D5784E6 /* NextLessonEntry.swift */,
 				503D98E8F86198B45B0CE72D /* NextLessonProvider.swift */,
-				A10000000000000000000001 /* NextLessonComplication.swift */,
-				A10000000000000000000002 /* NextLessonComplicationView.swift */,
 				EBC7389201879B86164FFD06 /* NextLessonWidget.swift */,
-				355AC1DEDB865C077E13B2E4 /* NextLessonWidgetView.swift */,
+				34E250E74AC550D0DACDD604 /* NextLessonWidgetView.swift */,
 			);
 			path = Complication;
 			sourceTree = "<group>";
@@ -317,6 +319,7 @@
 			children = (
 				BB1C3EB84500654159FDF4B1 /* BellScheduleTests.swift */,
 				388BD1CC5008C31F74DD4C9E /* MealPresentationTests.swift */,
+				ADDD00CE0899323D27146356 /* TimetableDTOTests.swift */,
 				4BCD7633B68E20D710099098 /* TimetableScrollTargetTests.swift */,
 			);
 			path = TimeforSchoolTests;
@@ -534,6 +537,7 @@
 			files = (
 				FED0851531F5F79CD2ECA18D /* BellScheduleTests.swift in Sources */,
 				957685099D2DD32A7719BA84 /* MealPresentationTests.swift in Sources */,
+				78E5FBBBCE39C512B9A249F5 /* TimetableDTOTests.swift in Sources */,
 				C0699DA76EC937EA3711C402 /* TimetableScrollTargetTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -595,6 +599,8 @@
 				203FCE1521201CA3313326BB /* DeepLink.swift in Sources */,
 				5E5201858B6CBCD05DC30AAB /* Lesson.swift in Sources */,
 				3508778DDBD624B536A2D80E /* Meal.swift in Sources */,
+				A2FEAD816E41BA9B2F351D00 /* MealComplication.swift in Sources */,
+				3EEB4DEDD6BC2EA3316C16A9 /* MealComplicationView.swift in Sources */,
 				362AF8CDB8C86D250942DF86 /* MealDTO.swift in Sources */,
 				CCB946F22B890DB0C6E62986 /* MealEntry.swift in Sources */,
 				1B784FAC60EA215C90E48DE9 /* MealProvider.swift in Sources */,
@@ -602,15 +608,13 @@
 				003C9A3D8089003E342A1191 /* MealTextCleaner.swift in Sources */,
 				41779272C8EF958B8FE14FE7 /* MealWidget.swift in Sources */,
 				C176AAA1F0FB74D06B6748B3 /* MealWidgetView.swift in Sources */,
-				A10000000000000000000013 /* MealComplication.swift in Sources */,
-				A10000000000000000000014 /* MealComplicationView.swift in Sources */,
 				C67D87452514889E8A0FDD60 /* Metrics.swift in Sources */,
+				CE031C5C553E7CE30CAAB468 /* NextLessonComplication.swift in Sources */,
+				D2BF4D7E8CD531BAF76B5C5F /* NextLessonComplicationView.swift in Sources */,
 				9FC109A3AD1BAADAAF637E96 /* NextLessonEntry.swift in Sources */,
 				ACB68C60E563F589443F6860 /* NextLessonProvider.swift in Sources */,
-				A10000000000000000000011 /* NextLessonComplication.swift in Sources */,
-				A10000000000000000000012 /* NextLessonComplicationView.swift in Sources */,
-				8FB517256C930199FA37D6DF /* NextLessonWidgetView.swift in Sources */,
 				4128952EFB3E31CF8267ABA0 /* NextLessonWidget.swift in Sources */,
+				E5D9A408BC1EDA622513667F /* NextLessonWidgetView.swift in Sources */,
 				33D38BF6C3D1092A0C8C90D2 /* Palette.swift in Sources */,
 				9E5549FFE951EA3EC1EB9BEC /* SchoolAPI.swift in Sources */,
 				9D11A381740056B641BD36BD /* SchoolClock.swift in Sources */,
