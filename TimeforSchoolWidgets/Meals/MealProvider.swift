@@ -12,13 +12,12 @@ struct MealProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping @Sendable (MealEntry) -> Void) {
         guard !context.isPreview else { return completion(.placeholder) }
-        if let cached = SchoolRepository.cachedMeals() {
+        if let fresh = SchoolRepository.freshMeals() {
             completion(MealEntry.resolve(
                 at: .now,
-                snapshot: cached,
-                calendar: cached.serviceCalendar()
+                snapshot: fresh,
+                calendar: fresh.serviceCalendar()
             ))
-            refresh(after: cached.fetchedAt)
             return
         }
         Task {
@@ -33,25 +32,17 @@ struct MealProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<MealEntry>) -> Void) {
         let now = Date.now
-        if let cached = SchoolRepository.cachedMeals() {
-            completion(Self.timeline(from: now, snapshot: cached))
-            refresh(after: cached.fetchedAt)
+        // A fresh cache answers without touching the network. When it is not
+        // fresh the refresh is awaited rather than fired off after the
+        // completion handler, which WidgetKit may never let run — and which
+        // only earns a second reload out of a metered budget when it does.
+        if let fresh = SchoolRepository.freshMeals(now: now) {
+            completion(Self.timeline(from: now, snapshot: fresh))
             return
         }
         Task {
             let snapshot = await SchoolRepository.shared.meals()
             completion(Self.timeline(from: now, snapshot: snapshot))
-        }
-    }
-
-    /// Return cached content first, then reload only when fresher menus arrive.
-    private func refresh(after fetchedAt: Date) {
-        Task {
-            guard let fresh = await SchoolRepository.shared.meals(),
-                  fresh.fetchedAt != fetchedAt
-            else { return }
-            WidgetCenter.shared.reloadTimelines(ofKind: MealWidget.kind)
-            WidgetCenter.shared.reloadTimelines(ofKind: MealComplication.kind)
         }
     }
 

@@ -32,6 +32,27 @@ actor SchoolRepository {
         SnapshotStorage.load(MealSnapshot.self, from: .meals)
     }
 
+    /// The cached timetable, but only while it is still worth trusting without
+    /// asking the network.
+    ///
+    /// Widget timelines use this to take the fast path: a fresh cache means the
+    /// extension can answer entirely from disk and never open a connection.
+    nonisolated static func freshTimetable(now: Date = .now) -> TimetableSnapshot? {
+        guard let cached = cachedTimetable(),
+              !cached.isStale(now: now),
+              cached.identity == .default
+        else { return nil }
+        return cached
+    }
+
+    nonisolated static func freshMeals(now: Date = .now) -> MealSnapshot? {
+        guard let cached = cachedMeals(),
+              !cached.isStale(now: now),
+              cached.identity == .default
+        else { return nil }
+        return cached
+    }
+
     // MARK: - Refresh
 
     /// Refreshes the timetable when the cached copy has aged out.
