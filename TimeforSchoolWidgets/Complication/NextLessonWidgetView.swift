@@ -163,37 +163,37 @@ struct NextLessonWidgetView: View {
                 Text(emptyTitle)
                     .font(.system(size: arch.subjectSize, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    // One line set at the focus's own size, so it is centred
-                    // against that and not against the smaller flanks.
-                    .offset(y: arch.textTop(at: 0.5, layout: .single(hasTeacher: false), size: arch.subjectSize))
+                    .frame(maxWidth: .infinity, minHeight: arch.thickness)
+                    .offset(y: arch.bandTop(at: 0.5) + arch.nudge(.single(hasTeacher: false)))
             } else {
                 let widths = slotWidths(row: width - Self.lessonInset * 2)
                 ForEach(Array(entry.slots.enumerated()), id: \.offset) { index, lesson in
                     let focus = index == focusSlot
                     let position = anchor(of: index, width: width)
                     let layout = layout(for: lesson, isFocus: focus, arch: arch, width: widths[index])
-                    // The size the cell is actually set at, which is also what
-                    // its height has to be measured from: a subject shrunk to
-                    // fit leaves a shorter block than its nominal size, and a
-                    // block centred against the wrong height rides high on
-                    // the band.
+                    // The size the subject and its period are set at, fitted
+                    // to the width the slot actually has.
                     let size = lesson.map {
                         fittedSize(for: $0, layout: layout, isFocus: focus, arch: arch, width: widths[index])
                     } ?? arch.periodSize(layout, isFocus: focus)
                     cell(for: lesson, layout: layout, size: size, isFocus: focus, arch: arch, width: widths[index])
+                        // Centred by the layout system inside a frame as deep
+                        // as the band, rather than by a guess at how tall the
+                        // text will come out. Hangul sets taller than the
+                        // metrics such a guess assumes, and the shortfall
+                        // showed as every lesson riding low on the band — the
+                        // focus twice as far as its flanks, having two lines
+                        // to be wrong about.
+                        .frame(width: widths[index], height: arch.thickness)
                         // The flanks lean with the band: each is turned to
                         // the arch's own tangent where it stands, so the
                         // lessons ride the curve rather than hover over it.
                         // The focus sits at the crest, where the tangent is
                         // flat anyway.
                         .rotationEffect(focus ? .zero : arch.tilt(at: position, width: width))
-                        // Each lesson is centred on the band's own centreline
-                        // where it stands, so it rides the arch instead of
-                        // sitting on a flat line across it. Aligning tops or
-                        // baselines instead leaves the smaller flanking
-                        // lessons floating high or low in the band.
-                        .offset(y: arch.textTop(at: position, layout: layout, size: size))
+                        // The frame now spans the band exactly, so the whole
+                        // placement is where the band's top edge falls here.
+                        .offset(y: arch.bandTop(at: position) + arch.nudge(layout))
                 }
             }
         }
@@ -270,11 +270,26 @@ struct NextLessonWidgetView: View {
             }
 
             if let value = line.value {
-                Text(value)
-                    .font(.system(size: arch.footerValueSize, weight: .semibold, design: .rounded))
-                    .foregroundStyle(accent)
-                    .monospacedDigit()
-                    .shadow(color: accent.opacity(0.5), radius: 3)
+                // "24분" is a number and a unit, not one word: the references
+                // set the figure loud and let what it is measured in stay
+                // with the rest of the sentence. Splitting on the digits
+                // themselves handles a clock time, a run of minutes, and an
+                // hour and minutes together without a case for each.
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    ForEach(Array(Self.runs(of: value).enumerated()), id: \.offset) { _, run in
+                        if run.isFigure {
+                            Text(run.text)
+                                .font(.system(size: arch.footerValueSize, weight: .semibold, design: .rounded))
+                                .foregroundStyle(accent)
+                                .monospacedDigit()
+                                .shadow(color: accent.opacity(0.5), radius: 3)
+                        } else {
+                            Text(run.text)
+                                .font(.system(size: arch.footerSize, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                }
             }
 
             Text(line.suffix)
@@ -361,7 +376,7 @@ struct NextLessonWidgetView: View {
         RadialGradient(
             stops: [
                 .init(color: .clear, location: 0.55),
-                .init(color: .black.opacity(0.32), location: 1),
+                .init(color: .black.opacity(0.2), location: 1),
             ],
             center: UnitPoint(x: glowAnchor, y: 0.45),
             startRadius: 0,
@@ -407,11 +422,8 @@ struct NextLessonWidgetView: View {
 
     // MARK: - Position
 
-    /// The day's hue lifted most of the way to white: bright enough to carry
-    /// the countdown and the lit edge, still unmistakably the card's colour.
-    private var accent: Color {
-        DayHue.color(entry.dayProgress, brightness: 1, white: 0.55)
-    }
+    /// What the countdown and the lit edge are stated in.
+    private var accent: Color { DayHue.accent(entry.dayProgress) }
 
     /// `false` only when the whole week is empty — the slots then hold three
     /// blanks rather than nothing at all, which is why counting them beats
@@ -773,6 +785,30 @@ struct NextLessonWidgetView: View {
         return Text(parts.joined(separator: ", "))
     }
 
+    /// One stretch of a value that is set all one way: either the figure
+    /// itself or the unit riding with it.
+    struct Run {
+        var text: String
+        var isFigure: Bool
+    }
+
+    /// Splits a value into its figures and everything between them. A colon
+    /// counts as part of a clock time rather than a separator, so "09:30"
+    /// stays one figure.
+    static func runs(of value: String) -> [Run] {
+        var runs: [Run] = []
+        for character in value {
+            let isFigure = character.isNumber || character == ":"
+            if var last = runs.last, last.isFigure == isFigure {
+                last.text.append(character)
+                runs[runs.count - 1] = last
+            } else {
+                runs.append(Run(text: String(character), isFigure: isFigure))
+            }
+        }
+        return runs
+    }
+
     /// The countdown in three parts, so the number can be set apart from what
     /// qualifies it.
     struct Footer {
@@ -798,11 +834,37 @@ private enum DayHue {
         (0.66, 0.24, 0.50),
     ]
 
+    /// What the card states a value in. The field's own hue lifted towards
+    /// white only ever gives a paler version of the ground it is read
+    /// against, which is no accent at all; these are the hues that ground
+    /// throws off when it is lit — icy at the first period, gold by the last
+    /// — so the number reads as the brightest thing on the card rather than
+    /// the palest.
+    private static let accentStops: [(r: Double, g: Double, b: Double)] = [
+        (0.53, 0.93, 1.00),
+        (0.74, 0.90, 1.00),
+        (1.00, 0.83, 0.60),
+    ]
+
     /// - Parameters:
     ///   - progress: 0 at the first period, 1 at the last.
     ///   - brightness: scales the colour down towards black.
     ///   - white: lifts it towards white, for the lit crest.
     static func color(_ progress: CGFloat, brightness: Double = 1, white: Double = 0) -> Color {
+        interpolate(stops, progress, brightness: brightness, white: white)
+    }
+
+    /// The accent for a day at `progress`, warming with it.
+    static func accent(_ progress: CGFloat) -> Color {
+        interpolate(accentStops, progress)
+    }
+
+    private static func interpolate(
+        _ stops: [(r: Double, g: Double, b: Double)],
+        _ progress: CGFloat,
+        brightness: Double = 1,
+        white: Double = 0
+    ) -> Color {
         let clamped = min(max(Double(progress), 0), 1)
         let position = clamped * Double(stops.count - 1)
         let index = min(Int(position), stops.count - 2)
@@ -866,14 +928,12 @@ private struct Arch {
     var subjectSize: CGFloat { height * 0.30 }
     var flankSize: CGFloat { height * 0.26 }
     var teacherSize: CGFloat { height * 0.185 }
-    var footerSize: CGFloat { height * 0.175 }
+    var footerSize: CGFloat { height * 0.155 }
     /// The countdown outweighs everything qualifying it — the loudest number
-    /// on the card, per the references.
-    var footerValueSize: CGFloat { height * 0.215 }
+    /// on the card, per the references, which set a value at half again what
+    /// its units are set at rather than a hair over.
+    var footerValueSize: CGFloat { height * 0.245 }
     var markerSize: CGFloat { height * 0.085 }
-
-    /// The middle of the band at unit position `x`.
-    func centre(at x: CGFloat) -> CGFloat { inset + drop(at: x) + thickness / 2 }
 
     /// The size a cell's subject and period are set at. A wrapped subject
     /// gives up some size to buy its second line — two lines at the focus's
@@ -890,29 +950,21 @@ private struct Arch {
     /// taller than the band itself, so the second line is bought with size.
     var reducedSize: CGFloat { height * 0.215 }
 
-    /// What a lesson stands on: its own height centred on the band.
-    func textTop(at x: CGFloat, layout: LessonLayout, size: CGFloat) -> CGFloat {
-        // The flanks are lifted slightly off the geometric centre — the
-        // band's underside is in shadow and its lit upper face is not, so
-        // text centred by measurement reads low. The focus is set a little
-        // lower again: it is the tallest block on the card and the crest is
-        // also where the marker rides.
-        let nudge: CGFloat = switch layout {
-        case .flank: -height * 0.015
-        case .single, .reduced: height * 0.01
-        }
-        return centre(at: x) - contentHeight(layout, size: size) / 2 + nudge
-    }
+    /// The band's top edge at unit position `x` — what a cell as deep as the
+    /// band is offset by, so that centring the text inside that frame centres
+    /// it on the band.
+    func bandTop(at x: CGFloat) -> CGFloat { inset + drop(at: x) }
 
-    /// Close enough to the laid-out height of a cell to centre it without
-    /// measuring the text. It is taken from the size the cell is actually set
-    /// at, and the teacher is asked about rather than assumed: a line that
-    /// never gets drawn, or a size the subject never gets set at, leaves the
-    /// lesson sitting high in the band.
-    private func contentHeight(_ layout: LessonLayout, size: CGFloat) -> CGFloat {
-        let lines = CGFloat(layout.isWrapped ? 2 : 1)
-        let teacher = layout.showsTeacher ? teacherSize * 1.22 - 2 : 0
-        return size * 1.22 * lines + teacher
+    /// The one thing measurement cannot give: the band's underside is in
+    /// shadow and its lit upper face is not, so text centred exactly reads
+    /// low. The flanks are lifted off the geometric centre; a lesson carrying
+    /// a teacher underneath is left alone, its second line already balancing
+    /// the block against the crest where the marker rides.
+    func nudge(_ layout: LessonLayout) -> CGFloat {
+        switch layout {
+        case .flank: -height * 0.02
+        case .single, .reduced: 0
+        }
     }
 
     /// How far below the crest the band sits at unit position `x`.
