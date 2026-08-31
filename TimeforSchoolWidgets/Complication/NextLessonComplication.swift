@@ -6,7 +6,7 @@ struct NextLessonComplication: Widget {
     nonisolated static let kind = "school.timefor.watch.NextLesson"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: Self.kind, provider: NextLessonProvider()) { entry in
+        StaticConfiguration(kind: Self.kind, provider: NextLessonProvider(cadence: .bell)) { entry in
             NextLessonComplicationView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
                 .environment(\.locale, .school)
