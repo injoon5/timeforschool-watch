@@ -1,4 +1,5 @@
 import SwiftUI
+import Synchronization
 import UIKit
 import WidgetKit
 
@@ -337,20 +338,20 @@ struct NextLessonWidgetView: View {
             let centre = CGPoint(x: size.width * glowAnchor, y: size.height * 0.5)
             let step = size.height * 0.24
             var radius = size.height * 0.2
+            // Gathered into one path and stroked once: the rings share a colour
+            // and a width, so a stroke apiece is one drawing call per ring for
+            // no visible difference.
+            var path = Path()
             while radius < size.width {
-                let rect = CGRect(
+                path.addEllipse(in: CGRect(
                     x: centre.x - radius,
                     y: centre.y - radius,
                     width: radius * 2,
                     height: radius * 2
-                )
-                context.stroke(
-                    Circle().path(in: rect),
-                    with: .color(.white.opacity(0.05)),
-                    lineWidth: 0.5
-                )
+                ))
                 radius += step
             }
+            context.stroke(path, with: .color(.white.opacity(0.05)), lineWidth: 0.5)
         }
     }
 
@@ -496,8 +497,31 @@ struct NextLessonWidgetView: View {
         return room > 0 ? room : nil
     }
 
+    /// Text measurement is the card's hottest repeated work: fitting one
+    /// subject measures it several times over, and trimming a long one measures
+    /// again for every character it drops. The same handful of strings come
+    /// back at the same handful of sizes on every entry in a timeline, so the
+    /// widths are worth keeping.
+    private static let widths = Mutex<[Measurement: CGFloat]>([:])
+
+    private struct Measurement: Hashable {
+        var text: String
+        var size: CGFloat
+    }
+
     private func measure(_ text: String, size: CGFloat) -> CGFloat {
-        text.size(withAttributes: [.font: UIFont.systemFont(ofSize: size, weight: .semibold)]).width
+        let key = Measurement(text: text, size: size)
+        if let cached = Self.widths.withLock({ $0[key] }) { return cached }
+        let width = text.size(withAttributes: [
+            .font: UIFont.systemFont(ofSize: size, weight: .semibold)
+        ]).width
+        Self.widths.withLock { widths in
+            // A day's worth of subjects at a few sizes each; the bound is only
+            // there so a pathological feed cannot grow this without end.
+            if widths.count > 512 { widths.removeAll(keepingCapacity: true) }
+            widths[key] = width
+        }
+        return width
     }
 
     /// What the subject is actually drawn as: broken so that it can wrap, and

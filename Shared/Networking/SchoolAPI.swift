@@ -17,7 +17,10 @@ actor SchoolAPI {
         configuration.timeoutIntervalForRequest = 10
         configuration.timeoutIntervalForResource = 20
         configuration.waitsForConnectivity = false
-        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        // Let the protocol cache do its job: the app decides *when* to ask via
+        // snapshot staleness, so a validated 304 costs a fraction of the radio
+        // time a full body does, and radio time is what drains a watch.
+        configuration.requestCachePolicy = .useProtocolCachePolicy
         configuration.httpAdditionalHeaders = ["Accept": "application/json"]
         session = URLSession(configuration: configuration)
     }

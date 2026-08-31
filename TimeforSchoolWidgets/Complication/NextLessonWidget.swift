@@ -6,7 +6,7 @@ struct NextLessonWidget: Widget {
     nonisolated static let kind = "school.timefor.watch.NextLessonWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: Self.kind, provider: NextLessonProvider()) { entry in
+        StaticConfiguration(kind: Self.kind, provider: NextLessonProvider(cadence: .minute)) { entry in
             // The view owns its own container background: the Smart Stack card
             // is a full-colour design, and a face renders it tinted instead.
             NextLessonWidgetView(entry: entry)
