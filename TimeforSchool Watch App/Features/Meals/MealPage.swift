@@ -4,21 +4,21 @@ import SwiftUI
 /// calorie count set apart at the foot of the list.
 struct MealPage: View {
     let presentation: MealPresentation
-    let meal: Meal?
+    let content: MealContent
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 MealHeader(presentation: presentation)
 
-                if let meal, !meal.dishes.isEmpty {
+                if case .menu(let meal) = content {
                     dishList(meal)
                     if let calories = meal.caloriesText {
                         CalorieChip(text: calories)
                             .padding(.top, 2)
                     }
                 } else {
-                    MealEmptyState()
+                    MealStateMessage(content: content)
                 }
             }
             .padding(.horizontal, Metrics.pageInset + 4)

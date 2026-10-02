@@ -13,6 +13,9 @@ struct NextLessonEntry: TimelineEntry {
         case future
         /// Lessons are over and the next day has not rolled in yet.
         case finished
+        /// Nothing cached, and the network could not supply a timetable
+        /// either. The card says so rather than showing lessons.
+        case unavailable
     }
 
     /// How many slots the Smart Stack card lays out. The lesson in focus
@@ -73,6 +76,21 @@ struct NextLessonEntry: TimelineEntry {
         self.countdownTarget = countdownTarget
     }
 
+    /// Shown when there is no timetable to read: no cache, and the fetch
+    /// failed. The sample below is a plausible school day, so rendering it here
+    /// would put invented lessons — and a countdown to one — on the wearer's
+    /// wrist. It belongs in the widget gallery and nowhere else.
+    static func unavailable(at date: Date) -> NextLessonEntry {
+        NextLessonEntry(
+            date: date,
+            lesson: nil,
+            status: .unavailable,
+            startsAt: nil,
+            endsAt: nil,
+            countdownTarget: nil
+        )
+    }
+
     static let placeholder = NextLessonEntry(
         date: .now,
         lesson: Lesson(period: 2, subject: "국어", teacher: "신영*", isReplaced: false, originalSubject: nil),
@@ -118,7 +136,7 @@ struct NextLessonEntry: TimelineEntry {
         let countdownTarget: Date? = switch status {
         case .current: endsAt
         case .upcoming: startsAt
-        case .future, .finished: nil
+        case .future, .finished, .unavailable: nil
         }
 
         return NextLessonEntry(

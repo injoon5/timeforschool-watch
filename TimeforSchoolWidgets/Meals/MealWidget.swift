@@ -47,12 +47,12 @@ private extension MealEntry {
             isFutureDay: false,
             isTomorrow: false
         ),
-        meal: Meal(
+        content: .menu(Meal(
             kind: .lunch,
             day: SchoolDate(.now),
             dishes: ["기장밥", "오징어무국", "안동찜닭", "배추김치"],
             calories: 915
-        )
+        ))
     )
 
     static let previewTomorrowDinner = MealEntry(
@@ -63,11 +63,11 @@ private extension MealEntry {
             isFutureDay: true,
             isTomorrow: true
         ),
-        meal: Meal(
+        content: .menu(Meal(
             kind: .dinner,
             day: SchoolDate(.now).adding(days: 1),
             dishes: ["차조밥", "된장찌개", "소불고기", "깍두기", "차조밥", "된장찌개", "소불고기", "깍두기"],
             calories: 802
-        )
+        ))
     )
 }

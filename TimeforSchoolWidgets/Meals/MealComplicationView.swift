@@ -10,14 +10,18 @@ struct MealComplicationView: View {
             .accessibilityLabel("\(serviceText), \(dishSummary)")
     }
 
+    /// The service, with the day it falls on when that is not today. After a
+    /// weekend or a long holiday the next meal is not tomorrow's, so the date
+    /// itself stands in rather than a flat "내일".
     private var serviceText: String {
         let kind = entry.presentation.kind.title
-        return entry.presentation.isFutureDay ? "내일 \(kind)" : kind
+        guard entry.presentation.isFutureDay else { return kind }
+        let day = entry.presentation.isTomorrow ? "내일" : entry.presentation.date.shortKoreanLabel
+        return "\(day) \(kind)"
     }
 
     private var dishSummary: String {
-        guard let dishes = entry.meal?.dishes, !dishes.isEmpty else { return "급식 없음" }
-        return dishes.joined(separator: ", ")
+        entry.content.briefText
     }
 }
 

@@ -22,23 +22,27 @@ struct NextLessonProvider: TimelineProvider {
         }
         Task {
             let week = await SchoolRepository.shared.timetable()?.week
-            completion(week.map { NextLessonEntry.resolve(at: .now, week: $0) } ?? .placeholder)
+            completion(week.map { NextLessonEntry.resolve(at: .now, week: $0) }
+                ?? .unavailable(at: .now))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<NextLessonEntry>) -> Void) {
         let now = Date.now
         if let cached = SchoolRepository.cachedTimetable() {
-            completion(Self.timeline(from: now, week: cached.week))
+            completion(Self.timeline(from: now, week: cached.week, fetchedAt: cached.fetchedAt))
             refresh(after: cached.fetchedAt)
             return
         }
         Task {
-            guard let week = await SchoolRepository.shared.timetable()?.week else {
-                completion(Timeline(entries: [.placeholder], policy: .after(now.addingTimeInterval(30 * 60))))
+            guard let snapshot = await SchoolRepository.shared.timetable() else {
+                completion(Timeline(
+                    entries: [.unavailable(at: now)],
+                    policy: .after(now.addingTimeInterval(30 * 60))
+                ))
                 return
             }
-            completion(Self.timeline(from: now, week: week))
+            completion(Self.timeline(from: now, week: snapshot.week, fetchedAt: snapshot.fetchedAt))
         }
     }
 
@@ -64,10 +68,19 @@ struct NextLessonProvider: TimelineProvider {
         return WidgetRelevance([WidgetRelevanceAttribute(context: .date(interval: window, kind: .scheduled))])
     }
 
-    /// How far ahead the per-minute entries run before the widget reloads.
-    private static let countdownHorizon = 60
+    /// How far ahead the per-minute countdown entries run.
+    ///
+    /// A reload policy is the earliest moment WidgetKit will *consider*
+    /// rebuilding, not a deadline it promises to meet, so the entries have to
+    /// outlast a late reload. One hour of them ends at the next bell, where a
+    /// slipped rebuild leaves the countdown frozen at "50분" for a whole
+    /// period. Two hours covers the lesson after the current one as well.
+    private static let countdownHorizon = 120
+    /// The rebuild is requested while entries still remain, so a reload that
+    /// runs a little late still lands before the timeline runs dry.
+    private static let reloadLead = 20
 
-    static func timeline(from now: Date, week: SchoolWeek) -> Timeline<NextLessonEntry> {
+    static func timeline(from now: Date, week: SchoolWeek, fetchedAt: Date) -> Timeline<NextLessonEntry> {
         let midnight = SchoolClock.calendar.startOfDay(
             for: SchoolClock.calendar.date(byAdding: .day, value: 1, to: now) ?? now
         )
@@ -75,8 +88,7 @@ struct NextLessonProvider: TimelineProvider {
         var boundaries: Set<Date> = [midnight]
 
         // The row shows whole minutes remaining, so it needs an entry a
-        // minute. An hour of them is enough to cover any gap between bells,
-        // and the reload below tops the window back up.
+        // minute for as long as the countdown horizon runs.
         let thisMinute = SchoolClock.calendar.date(
             from: SchoolClock.calendar.dateComponents([.year, .month, .day, .hour, .minute], from: now)
         ) ?? now
@@ -97,7 +109,23 @@ struct NextLessonProvider: TimelineProvider {
         let entries = [NextLessonEntry.resolve(at: now, week: week)]
             + upcoming.map { NextLessonEntry.resolve(at: $0, week: week) }
 
-        let reloadAt = min(midnight, thisMinute.addingTimeInterval(TimeInterval(countdownHorizon - 5) * 60))
-        return Timeline(entries: entries, policy: .after(reloadAt))
+        return Timeline(entries: entries, policy: .after(reload(from: now, at: thisMinute, fetchedAt: fetchedAt)))
+    }
+
+    /// When to ask for the next rebuild: whichever comes first of the new day,
+    /// the end of the countdown entries, and the moment the cached week ages
+    /// out. Leaving the cache out of that means a substitution published this
+    /// morning can sit unseen on the face until midnight, because nothing else
+    /// rebuilds a face complication on its own.
+    private static func reload(from now: Date, at thisMinute: Date, fetchedAt: Date) -> Date {
+        let midnight = SchoolClock.calendar.startOfDay(
+            for: SchoolClock.calendar.date(byAdding: .day, value: 1, to: now) ?? now
+        )
+        let entriesRunOut = thisMinute.addingTimeInterval(TimeInterval(countdownHorizon - reloadLead) * 60)
+        let cacheExpiry = fetchedAt.addingTimeInterval(TimetableSnapshot.maxAge)
+        let earliest = min(midnight, min(entriesRunOut, cacheExpiry))
+        // An already-expired cache would otherwise ask for a rebuild in the
+        // past, and spend the budget on a loop of them.
+        return max(earliest, now.addingTimeInterval(5 * 60))
     }
 }

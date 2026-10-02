@@ -56,6 +56,11 @@ struct MealPresentation: Hashable, Sendable, Identifiable {
     var isFutureDay: Bool
     /// `true` only when the shown day is literally tomorrow.
     var isTomorrow: Bool
+    /// `false` when the loaded calendar holds no service of this kind still to
+    /// come: every published date is behind us. The page then has a day on it
+    /// only so it has something to key on — there is nothing left to serve, and
+    /// falling back to a meal already eaten would claim otherwise.
+    var hasService: Bool = true
 
     var id: MealKind { kind }
 
@@ -113,7 +118,10 @@ struct MealPresentation: Hashable, Sendable, Identifiable {
             guard let date = calendar.nextDay(for: kind, after: today) else { return nil }
             return future(kind, on: date, relativeTo: today)
         }
-        return candidates.min(by: comesBefore) ?? current(.lunch, on: today)
+        // Nothing published from today onwards: both services have rolled over
+        // and the calendar names no later date. There is no next meal to point
+        // at, and today's lunch is not it.
+        return candidates.min(by: comesBefore) ?? exhausted(.lunch, on: today)
     }
 
     private static func page(
@@ -129,14 +137,25 @@ struct MealPresentation: Hashable, Sendable, Identifiable {
             return future(kind, on: target, relativeTo: today)
         }
         // With no snapshot, tomorrow is the best provisional answer. A known
-        // empty calendar stays on today rather than claiming an unpublished
-        // meal exists tomorrow.
-        guard calendar == nil else { return current(kind, on: today) }
+        // calendar with nothing left to serve says so rather than falling back
+        // to today's service, which has already been served by definition —
+        // this branch only runs once that service has rolled over.
+        guard calendar == nil else { return exhausted(kind, on: today) }
         return future(kind, on: today.adding(days: 1), relativeTo: today)
     }
 
     private static func current(_ kind: MealKind, on date: SchoolDate) -> MealPresentation {
         MealPresentation(kind: kind, date: date, isFutureDay: false, isTomorrow: false)
+    }
+
+    private static func exhausted(_ kind: MealKind, on date: SchoolDate) -> MealPresentation {
+        MealPresentation(
+            kind: kind,
+            date: date,
+            isFutureDay: false,
+            isTomorrow: false,
+            hasService: false
+        )
     }
 
     private static func future(
@@ -155,5 +174,65 @@ struct MealPresentation: Hashable, Sendable, Identifiable {
     private static func comesBefore(_ lhs: MealPresentation, _ rhs: MealPresentation) -> Bool {
         if lhs.date != rhs.date { return lhs.date < rhs.date }
         return lhs.kind.rawValue < rhs.kind.rawValue
+    }
+}
+
+/// Whether the meal snapshot has anything to say yet.
+enum MealAvailability: Sendable {
+    case loading
+    case loaded
+    /// Nothing cached and the network could not supply anything either.
+    case unavailable
+}
+
+/// What a meal surface actually knows about one service on one day.
+///
+/// "No menu" and "no answer" look identical on screen unless they are kept
+/// apart here: a failed first fetch, a day the cached window never covered, and
+/// a day the school genuinely serves nothing are three different facts, and
+/// only the last of them is "급식 없음".
+enum MealContent: Hashable, Sendable {
+    /// A published menu.
+    case menu(Meal)
+    /// Nothing cached yet, and the first fetch is still running.
+    case loading
+    /// Nothing cached and the fetch failed.
+    case unreachable
+    /// The cached window covers this day and the school serves nothing on it.
+    case unpublished
+    /// The cached window stops short of this day, so nothing is known about it.
+    case unknown
+    /// The calendar holds no service of this kind still to come.
+    case noService
+
+    static func resolve(
+        presentation: MealPresentation,
+        snapshot: MealSnapshot?,
+        availability: MealAvailability
+    ) -> MealContent {
+        guard presentation.hasService else { return .noService }
+        guard let snapshot else {
+            return availability == .unavailable ? .unreachable : .loading
+        }
+        if let meal = snapshot.meal(kind: presentation.kind, on: presentation.date),
+           !meal.dishes.isEmpty {
+            return .menu(meal)
+        }
+        // A day the window never reached says nothing about that day. Only a
+        // covered day can report an empty menu as fact.
+        guard snapshot.covers(presentation.date) else { return .unknown }
+        return .unpublished
+    }
+
+    /// The whole state in one line, for surfaces with room for nothing else.
+    var briefText: String {
+        switch self {
+        case .menu(let meal): meal.dishes.joined(separator: ", ")
+        case .loading: "불러오는 중"
+        case .unreachable: "불러올 수 없음"
+        case .unpublished: "급식 없음"
+        case .unknown: "정보 없음"
+        case .noService: "예정된 급식 없음"
+        }
     }
 }

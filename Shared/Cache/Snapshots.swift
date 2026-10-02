@@ -44,6 +44,12 @@ struct MealSnapshot: Codable, Sendable {
         meals.first { $0.kind == kind && $0.day == day }
     }
 
+    /// Whether the fetched window actually asked the server about `day`.
+    /// Outside it, a missing menu means "not fetched", not "not served".
+    func covers(_ day: SchoolDate) -> Bool {
+        (windowStart...windowEnd).contains(day)
+    }
+
     /// Published dates by service. An empty value is meaningful: the server
     /// successfully reported that the window contains no meals.
     func serviceCalendar() -> MealServiceCalendar {

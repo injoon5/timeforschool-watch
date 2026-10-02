@@ -27,7 +27,7 @@ struct MealWidgetView: View {
 
             Text(dishSummary)
                 .font(.system(.caption2, weight: .medium))
-                .foregroundStyle(entry.meal?.dishes.isEmpty == false ? .primary : .secondary)
+                .foregroundStyle(entry.meal == nil ? .secondary : .primary)
                 .lineLimit(6)
                 .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -45,9 +45,10 @@ struct MealWidgetView: View {
         return "\(kind) · \(day)"
     }
 
+    /// A menu when there is one, and otherwise which kind of nothing this is —
+    /// a failed fetch must not read as a confirmed empty menu.
     private var dishSummary: String {
-        guard let dishes = entry.meal?.dishes, !dishes.isEmpty else { return "급식 없음" }
-        return dishes.joined(separator: ", ")
+        entry.content.briefText
     }
 }
 

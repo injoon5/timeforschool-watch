@@ -62,6 +62,81 @@ struct MealPresentationTests {
         #expect(pages.first?.date == nextService)
     }
 
+    @Test("A calendar with nothing left to serve does not reoffer a served meal")
+    func nothingLeftToServe() throws {
+        // Friday evening: lunch was served and published, dinner never was, and
+        // the calendar names no later date.
+        let now = try date(year: 2026, month: 8, day: 7, hour: 19)
+        let today = SchoolDate(now)
+        let calendar = MealServiceCalendar(meals: [meal(.lunch, on: today)])
+
+        let upcoming = MealPresentation.upcoming(now: now, calendar: calendar)
+
+        #expect(!upcoming.hasService)
+        #expect(!upcoming.isFutureDay)
+        #expect(MealPresentation.pages(now: now, calendar: calendar).allSatisfy { !$0.hasService })
+    }
+
+    @Test("A page with no service to come shows that, not the day's menu")
+    func noServiceBeatsAServedMenu() throws {
+        let now = try date(year: 2026, month: 8, day: 7, hour: 19)
+        let today = SchoolDate(now)
+        let served = meal(.lunch, on: today)
+        let snapshot = snapshot(meals: [served], from: today, to: today.adding(days: 30))
+
+        let page = MealPresentation.upcoming(now: now, calendar: snapshot.serviceCalendar())
+        let content = MealContent.resolve(presentation: page, snapshot: snapshot, availability: .loaded)
+
+        #expect(content == .noService)
+    }
+
+    @Test("A first fetch still running is not a confirmed empty menu")
+    func loadingIsNotEmpty() throws {
+        let page = MealPresentation(
+            kind: .lunch,
+            date: SchoolDate(try date(year: 2026, month: 8, day: 3, hour: 9)),
+            isFutureDay: false,
+            isTomorrow: false
+        )
+
+        #expect(MealContent.resolve(presentation: page, snapshot: nil, availability: .loading) == .loading)
+        #expect(MealContent.resolve(presentation: page, snapshot: nil, availability: .unavailable) == .unreachable)
+    }
+
+    @Test("A day the cached window never covered is unknown, not empty")
+    func uncoveredDayIsUnknown() throws {
+        let today = SchoolDate(try date(year: 2026, month: 8, day: 3, hour: 9))
+        let covered = snapshot(meals: [], from: today, to: today.adding(days: 3))
+
+        let inside = MealContent.resolve(
+            presentation: page(.lunch, on: today),
+            snapshot: covered,
+            availability: .loaded
+        )
+        let outside = MealContent.resolve(
+            presentation: page(.lunch, on: today.adding(days: 10)),
+            snapshot: covered,
+            availability: .loaded
+        )
+
+        #expect(inside == .unpublished)
+        #expect(outside == .unknown)
+    }
+
+    @Test("A published menu is returned as itself")
+    func publishedMenu() throws {
+        let today = SchoolDate(try date(year: 2026, month: 8, day: 3, hour: 9))
+        let served = meal(.lunch, on: today)
+
+        let content = MealContent.resolve(
+            presentation: page(.lunch, on: today),
+            snapshot: snapshot(meals: [served], from: today, to: today.adding(days: 30)),
+            availability: .loaded
+        )
+
+        #expect(content == .menu(served))
+    }
+
     private func date(year: Int, month: Int, day: Int, hour: Int) throws -> Date {
         try #require(SchoolClock.calendar.date(
             from: DateComponents(year: year, month: month, day: day, hour: hour)
@@ -70,5 +145,23 @@ struct MealPresentationTests {
 
     private func meal(_ kind: MealKind, on day: SchoolDate) -> Meal {
         Meal(kind: kind, day: day, dishes: ["메뉴"], calories: nil)
+    }
+
+    private func page(_ kind: MealKind, on day: SchoolDate) -> MealPresentation {
+        MealPresentation(kind: kind, date: day, isFutureDay: false, isTomorrow: false)
+    }
+
+    private func snapshot(
+        meals: [Meal],
+        from start: SchoolDate,
+        to end: SchoolDate
+    ) -> MealSnapshot {
+        MealSnapshot(
+            identity: .default,
+            meals: meals,
+            windowStart: start,
+            windowEnd: end,
+            fetchedAt: .now
+        )
     }
 }

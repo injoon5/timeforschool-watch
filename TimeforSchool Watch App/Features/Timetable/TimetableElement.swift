@@ -48,8 +48,9 @@ enum TimetableElement: Hashable, Identifiable, Sendable {
 
 extension TimetablePresentation {
     /// The row or marker the screen positions when it opens. Before the first
-    /// bell the list stays at its natural top edge, so the header and start dot
-    /// remain together rather than forcing the dot into the vertical centre.
+    /// bell there is no such row: the list rests on its header instead, so the
+    /// header and start dot stay together rather than forcing the dot into the
+    /// vertical centre.
     var scrollTargetElementID: TimetableElement.ID? {
         switch indicator {
         case .beforeFirstLesson: nil

@@ -43,17 +43,46 @@ struct CalorieChip: View {
     }
 }
 
-/// Weekends, holidays, and days the school has not published yet.
-struct MealEmptyState: View {
+/// Everything a page shows instead of a menu.
+///
+/// A weekend, a first fetch still running, and a fetch that failed all leave
+/// the same blank page, so each says which one it is rather than letting the
+/// wearer read a network failure as "no lunch today".
+struct MealStateMessage: View {
+    let content: MealContent
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("급식 없음")
+            Text(title)
                 .font(Typography.subject)
                 .foregroundStyle(Palette.primaryText)
-            Text("이 날은 급식 정보가 없어요.")
+            Text(detail)
                 .font(Typography.teacher)
                 .foregroundStyle(Palette.secondaryText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var title: String {
+        switch content {
+        case .menu: ""
+        case .loading: "불러오는 중"
+        case .unreachable: "불러올 수 없음"
+        case .unpublished: "급식 없음"
+        case .unknown: "정보 없음"
+        case .noService: "예정된 급식 없음"
+        }
+    }
+
+    private var detail: String {
+        switch content {
+        case .menu: ""
+        case .loading: "급식을 가져오고 있어요."
+        case .unreachable: "네트워크를 확인해 주세요."
+        case .unpublished: "이 날은 급식 정보가 없어요."
+        case .unknown: "이 날은 아직 받아오지 못했어요."
+        case .noService: "다음 급식은 아직 공개되지 않았어요."
+        }
     }
 }

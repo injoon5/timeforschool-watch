@@ -21,6 +21,7 @@ final class SchoolStore {
     private(set) var week: SchoolWeek
     private(set) var meals: MealSnapshot?
     private(set) var availability: TimetableAvailability
+    private(set) var mealAvailability: MealAvailability
 
     /// Published dates for each meal service, used to skip weekends, holidays,
     /// and lunch-only/dinner-only days. `nil` means nothing has loaded yet;
@@ -43,12 +44,14 @@ final class SchoolStore {
         meals = mealCache
         mealCalendar = mealCache?.serviceCalendar()
         availability = timetable == nil ? .loading : .loaded
+        mealAvailability = mealCache == nil ? .loading : .loaded
         timetableFetchedAt = timetable?.fetchedAt
         mealsFetchedAt = mealCache?.fetchedAt
     }
 
-    func meal(_ kind: MealKind, on day: SchoolDate) -> Meal? {
-        meals?.meal(kind: kind, on: day)
+    /// What one meal page knows: a menu, or which kind of nothing it has.
+    func content(for page: MealPresentation) -> MealContent {
+        MealContent.resolve(presentation: page, snapshot: meals, availability: mealAvailability)
     }
 
     /// Brings both snapshots up to date. Safe to call on every appearance:
@@ -56,32 +59,43 @@ final class SchoolStore {
     func refresh() {
         guard refreshTask == nil else { return }
         refreshTask = Task { [repository] in
-            async let timetable = repository.timetable()
-            async let mealWindow = repository.meals()
-            let (freshWeek, freshMeals) = await (timetable, mealWindow)
-
-            var changed = false
-            if let freshWeek, freshWeek.fetchedAt != timetableFetchedAt {
-                week = freshWeek.week
-                timetableFetchedAt = freshWeek.fetchedAt
-                changed = true
-            }
-            if let freshMeals, freshMeals.fetchedAt != mealsFetchedAt {
-                meals = freshMeals
-                mealCalendar = freshMeals.serviceCalendar()
-                mealsFetchedAt = freshMeals.fetchedAt
-                changed = true
-            }
-            availability = week.days.isEmpty ? .unavailable : .loaded
+            // Each request publishes as soon as it lands. Awaiting both before
+            // touching any state would hold a timetable that arrived in a
+            // second behind a meal request still running out its timeout.
+            async let timetable = refreshTimetable(using: repository)
+            async let meals = refreshMeals(using: repository)
+            let (timetableChanged, mealsChanged) = await (timetable, meals)
 
             // Reload the complication and Smart Stack only when something
             // actually arrived — widget reloads are a metered budget, and most
-            // launches are answered entirely from cache.
-            if changed {
+            // launches are answered entirely from cache. One reload covers
+            // both kinds, so it waits until both requests have settled.
+            if timetableChanged || mealsChanged {
                 WidgetCenter.shared.reloadAllTimelines()
             }
 
             refreshTask = nil
         }
+    }
+
+    /// - Returns: `true` when a genuinely newer snapshot replaced what was on
+    ///   screen, which is what earns a widget reload.
+    private func refreshTimetable(using repository: SchoolRepository) async -> Bool {
+        let fresh = await repository.timetable()
+        defer { availability = week.days.isEmpty ? .unavailable : .loaded }
+        guard let fresh, fresh.fetchedAt != timetableFetchedAt else { return false }
+        week = fresh.week
+        timetableFetchedAt = fresh.fetchedAt
+        return true
+    }
+
+    private func refreshMeals(using repository: SchoolRepository) async -> Bool {
+        let fresh = await repository.meals()
+        defer { mealAvailability = meals == nil ? .unavailable : .loaded }
+        guard let fresh, fresh.fetchedAt != mealsFetchedAt else { return false }
+        meals = fresh
+        mealCalendar = fresh.serviceCalendar()
+        mealsFetchedAt = fresh.fetchedAt
+        return true
     }
 }

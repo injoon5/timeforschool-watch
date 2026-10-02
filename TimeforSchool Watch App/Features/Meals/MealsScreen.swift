@@ -20,7 +20,7 @@ struct MealsScreen: View {
             TabView(selection: $selection) {
                 ForEach(pages) { page in
                     Tab(value: page.kind) {
-                        MealPage(presentation: page, meal: store.meal(page.kind, on: page.date))
+                        MealPage(presentation: page, content: store.content(for: page))
                     }
                 }
             }

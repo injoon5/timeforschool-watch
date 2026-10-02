@@ -15,6 +15,20 @@ struct TimetableResponse: Decodable, Sendable {
             updatedAt: updateDate
         )
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case dayTime, timetable, updateDate
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // A missing or null `day_time` must reach `BellSchedule(dayTime:)` as an
+        // empty list so the standard bell schedule takes over. Requiring the
+        // field instead fails the whole timetable before that fallback runs.
+        dayTime = (try? container.decodeIfPresent([String].self, forKey: .dayTime)) ?? []
+        timetable = try container.decode([[LessonDTO]].self, forKey: .timetable)
+        updateDate = try? container.decodeIfPresent(String.self, forKey: .updateDate)
+    }
 }
 
 struct LessonDTO: Decodable, Sendable {

@@ -419,7 +419,7 @@ struct NextLessonWidgetView: View {
             return slot + progress * slot
         case .upcoming where isBreak:
             return slot + (progress - 0.5) * slot * 0.3
-        case .upcoming, .future, .finished:
+        case .upcoming, .future, .finished, .unavailable:
             return nil
         }
     }
@@ -431,7 +431,7 @@ struct NextLessonWidgetView: View {
             entry.startsAt.flatMap { start in entry.endsAt.map { (start, $0) } }
         case .upcoming:
             entry.breakStartedAt.flatMap { start in entry.startsAt.map { (start, $0) } }
-        case .future, .finished:
+        case .future, .finished, .unavailable:
             nil
         }
         guard let span, span.end > span.start else { return nil }
@@ -461,8 +461,10 @@ struct NextLessonWidgetView: View {
     /// wait for carries a label, so the line almost always spans the card.
     private var footer: Footer {
         guard entry.lesson != nil else {
-            // The day's lessons ran out — or the whole week has none to run,
-            // which the slots the card was handed still show.
+            // Nothing was loaded at all, or the day's lessons ran out — or the
+            // whole week has none to run, which the slots the card was handed
+            // still show.
+            if entry.status == .unavailable { return Footer(suffix: "네트워크 확인") }
             return Footer(suffix: hasAnyLesson ? "오늘 수업 끝" : "이번 주 수업 없음")
         }
 
@@ -484,6 +486,8 @@ struct NextLessonWidgetView: View {
             return Footer(prefix: day, value: clock, suffix: "시작")
         case .finished:
             return Footer(suffix: "오늘 수업 끝")
+        case .unavailable:
+            return Footer(suffix: "네트워크 확인")
         }
     }
 
@@ -523,10 +527,15 @@ struct NextLessonWidgetView: View {
     }
 
     private var emptyTitle: String {
-        entry.status == .finished ? "수업 끝" : "수업 없음"
+        switch entry.status {
+        case .finished: "수업 끝"
+        case .unavailable: "불러올 수 없음"
+        default: "수업 없음"
+        }
     }
 
     private var accessibilityLabel: Text {
+        guard entry.status != .unavailable else { return Text("시간표를 불러올 수 없음") }
         guard let lesson = entry.lesson else { return Text("남은 수업 없음") }
         var parts: [String] = []
         if let day = entry.dayLabel { parts.append(day) }

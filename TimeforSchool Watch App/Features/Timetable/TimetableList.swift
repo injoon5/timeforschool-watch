@@ -29,6 +29,7 @@ struct TimetableList: View {
                 centeringSlack(fraction: centeringSlackFraction)
                 DayHeader(presentation: presentation)
                     .padding(.bottom, 2)
+                    .id(Self.topAnchor)
 
                 if elements.isEmpty {
                     TimetableEmptyState(availability: availability)
@@ -56,13 +57,19 @@ struct TimetableList: View {
         }
     }
 
-    /// Centres active lessons and breaks, and rests the end dot at the bottom.
-    /// The start dot needs no scroll because it is already at the natural top.
+    /// The row the list rests on: the header before the first bell, the end
+    /// dot once the day is over, and the live lesson or break in between.
+    private static let topAnchor = "day.header"
+
+    /// Centres active lessons and breaks, rests the end dot at the bottom, and
+    /// returns to the header before the first bell.
+    ///
+    /// That last case still needs a scroll even though the header is the
+    /// natural top: at 17:00 the same scroll view swaps today's finished day
+    /// for tomorrow's, and left alone it stays parked wherever the end dot had
+    /// pulled it — at the bottom of a day that has not started.
     private func positionMarker(with proxy: ScrollViewProxy) {
-        guard let target = presentation.scrollTargetElementID else {
-            deferredTarget = nil
-            return
-        }
+        let target = presentation.scrollTargetElementID ?? Self.topAnchor
         guard !isScrolling else {
             deferredTarget = target
             return
@@ -87,7 +94,11 @@ struct TimetableList: View {
     }
 
     private var scrollAnchor: UnitPoint {
-        presentation.indicator == .afterLastLesson ? .bottom : .center
+        switch presentation.indicator {
+        case .beforeFirstLesson: .top
+        case .afterLastLesson: .bottom
+        case .duringLesson, .duringBreak: .center
+        }
     }
 
     @ViewBuilder

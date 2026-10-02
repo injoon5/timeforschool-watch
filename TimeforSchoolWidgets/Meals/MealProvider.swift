@@ -16,7 +16,8 @@ struct MealProvider: TimelineProvider {
             completion(MealEntry.resolve(
                 at: .now,
                 snapshot: cached,
-                calendar: cached.serviceCalendar()
+                calendar: cached.serviceCalendar(),
+                availability: .loaded
             ))
             refresh(after: cached.fetchedAt)
             return
@@ -26,7 +27,8 @@ struct MealProvider: TimelineProvider {
             completion(MealEntry.resolve(
                 at: .now,
                 snapshot: snapshot,
-                calendar: snapshot?.serviceCalendar()
+                calendar: snapshot?.serviceCalendar(),
+                availability: snapshot == nil ? .unavailable : .loaded
             ))
         }
     }
@@ -78,6 +80,7 @@ struct MealProvider: TimelineProvider {
 
     static func timeline(from now: Date, snapshot: MealSnapshot?) -> Timeline<MealEntry> {
         let calendar = snapshot?.serviceCalendar()
+        let availability: MealAvailability = snapshot == nil ? .unavailable : .loaded
         let midnight = SchoolClock.calendar.startOfDay(
             for: SchoolClock.calendar.date(byAdding: .day, value: 1, to: now) ?? now
         )
@@ -89,8 +92,10 @@ struct MealProvider: TimelineProvider {
         .filter { $0 > now }
         .sorted()
 
-        let entries = [MealEntry.resolve(at: now, snapshot: snapshot, calendar: calendar)]
-            + boundaries.map { MealEntry.resolve(at: $0, snapshot: snapshot, calendar: calendar) }
+        let entries = [MealEntry.resolve(at: now, snapshot: snapshot, calendar: calendar, availability: availability)]
+            + boundaries.map {
+                MealEntry.resolve(at: $0, snapshot: snapshot, calendar: calendar, availability: availability)
+            }
 
         return Timeline(entries: entries, policy: .after(midnight))
     }
