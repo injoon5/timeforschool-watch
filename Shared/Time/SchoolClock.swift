@@ -33,9 +33,13 @@ enum SchoolClock {
     /// The first school day strictly after `date`.
     static func nextSchoolDay(after date: Date) -> Date {
         var candidate = date
-        repeat {
+        // A week is a hard bound: every seven days contains a school day, so if
+        // the loop has not found one the calendar is lying and spinning on it
+        // would only burn battery.
+        for _ in 1...7 {
             candidate = calendar.date(byAdding: .day, value: 1, to: candidate) ?? candidate
-        } while !isSchoolDay(candidate)
+            if isSchoolDay(candidate) { return candidate }
+        }
         return candidate
     }
 

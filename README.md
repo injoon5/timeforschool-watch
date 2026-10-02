@@ -88,16 +88,45 @@ Two widgets in one extension, both supporting the Smart Stack and watch face
 complications.
 
 **다음 수업** — families: `accessoryCircular`, `accessoryCorner`,
-`accessoryInline`, `accessoryRectangular`. The rectangular layout is period
-number, subject, teacher, plus one line that follows the clock: minutes
-remaining while the lesson is running, the `09:10 – 10:00` span otherwise. A
-Smart Stack card (184 × 80.5 pt on 45 mm) puts that line below the teacher. A
-watch face complication (about 47 pt) has room for two lines, so it moves the
-line beside the subject and shows only the minutes, or `내일`.
+`accessoryInline`, `accessoryRectangular`.
 
-Because the row counts whole minutes, the timeline carries one entry per minute
+The rectangular Smart Stack card is a short run of the day rather than a single
+row: three lessons ride a lit glass arch, the one in focus held at the crest
+with its teacher under it, its neighbours dim and turned to the arch's own
+tangent where they stand. A marker rides the leading edge at the wearer's
+position, trailing a lit rim over the part of the day already behind them. The
+whole card takes its hue from how far through the day the focus sits — cool at
+the first period, warm by the last.
+
+Every measurement is a fraction of the card's height, and the same parabola
+places the band and centres the lessons standing on it, so nothing floats off
+the band it belongs to at any watch size.
+
+A subject is set at whatever size holds it whole, in three steps: full size
+over the teacher, smaller but still over the teacher, then two lines with the
+teacher given up. Below that floor it is cut with an ellipsis rather than shrunk
+further. Anything past ten characters is cut on principle — the feed sometimes
+carries a whole course title where a subject belongs, and the opening of the
+name says more than all of it set too small to read. The timetable list keeps
+the full name; it has the width for it. The period number is set from the same fitted size as the subject
+beside it, so it never ends up larger than the word it labels. Korean only
+breaks lines at spaces, so a subject written as one run — 국제사회문화탐구 — is
+given zero-width breaks and wraps between characters.
+
+One line under the crest says what the wearer is waiting for. A lesson in
+progress counts down to what comes after it, not to its own bell — 점심시간
+25분 후 시작 — because the answer wanted in fourth period is how long until
+lunch. A break counts down as itself: 점심시간 30분 남음. The day's last lesson
+has nothing after it to name and counts down to its own end. Every line is
+centred as one phrase.
+
+Because the line counts whole minutes, the timeline carries one entry per minute
 for the next hour, plus one entry at every bell time, and reloads to refill the
 window.
+
+The watch face complications are drawn separately: a face renders in a single
+tint, where the arch and the neighbouring lessons would only muddy it, so those
+layouts state one lesson plainly.
 
 **급식** — families: `accessoryRectangular`, `accessoryInline`. Shows the next
 published meal that has not been served, respecting separate lunch and dinner
@@ -145,6 +174,9 @@ Notes on the responses:
   not published; the app uses a 50-minute constant.
 - `/lunch` returns NEIS records. `MMEAL_SC_CODE` is `1` 조식, `2` 중식, `3` 석식.
   Only 중식 and 석식 are used.
+- Subject names are upper-cased on the way in. A split class arrives as 사회b
+  one week and 사회B the next, and the two would read as different subjects on
+  a card that shows a single word.
 - Dish names in `DDISH_NM` carry allergen markers: a trailing `y` on this
   school's feed, and sometimes the numeric `(1.5.6)` form. Both are stripped.
 - When a date range contains no menu, `/lunch` responds `404` with
@@ -182,4 +214,12 @@ against. This makes every state of the day reachable without waiting.
 
 ```
 SIMCTL_CHILD_TFS_TIME_OFFSET_MINUTES=2124 xcrun simctl launch booted school.timefor.watch
+```
+
+`TFS_START_PAGE=meals` opens the app on the meal page. The watch simulator does
+not route `timeforschool://` URLs, so this is the only way to reach that page
+without tapping.
+
+```
+SIMCTL_CHILD_TFS_START_PAGE=meals xcrun simctl launch booted school.timefor.watch
 ```

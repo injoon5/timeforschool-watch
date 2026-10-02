@@ -30,6 +30,12 @@ final class SchoolStore {
 
     private let repository: SchoolRepository
     private var refreshTask: Task<Void, Never>?
+    /// When the last refresh pass finished. Launch runs `onAppear` and the
+    /// `.active` scene phase back to back, and every wrist raise brings the app
+    /// forward again; without a floor each of those is a fresh actor round trip
+    /// and a fresh pair of staleness checks.
+    private var lastRefreshedAt: Date?
+    private static let minimumRefreshInterval: TimeInterval = 60
     /// Fetch stamps of what is currently on screen, so a refresh can tell a
     /// genuinely new snapshot from the cache it already had.
     private var timetableFetchedAt: Date?
@@ -56,8 +62,11 @@ final class SchoolStore {
 
     /// Brings both snapshots up to date. Safe to call on every appearance:
     /// the repository no-ops when the cache is still fresh.
-    func refresh() {
+    func refresh(now: Date = .now) {
         guard refreshTask == nil else { return }
+        if let lastRefreshedAt, now.timeIntervalSince(lastRefreshedAt) < Self.minimumRefreshInterval {
+            return
+        }
         refreshTask = Task { [repository] in
             // Each request publishes as soon as it lands. Awaiting both before
             // touching any state would hold a timetable that arrived in a
@@ -74,6 +83,7 @@ final class SchoolStore {
                 WidgetCenter.shared.reloadAllTimelines()
             }
 
+            lastRefreshedAt = .now
             refreshTask = nil
         }
     }

@@ -1,4 +1,6 @@
 import SwiftUI
+import Synchronization
+import UIKit
 import WidgetKit
 
 /// Renders the rectangular next-lesson Smart Stack card independently from
@@ -41,7 +43,6 @@ struct NextLessonWidgetView: View {
 
                 VStack(spacing: 0) {
                     lessons(arch, width: proxy.size.width)
-                        .padding(.horizontal, 5)
 
                     Spacer(minLength: 0)
 
@@ -144,14 +145,17 @@ struct NextLessonWidgetView: View {
                     .shadow(color: accent.opacity(0.9), radius: 3)
                     .position(
                         x: proxy.size.width * cursor,
-                        y: arch.inset + arch.drop(at: cursor) + arch.markerSize * 0.25
+                        // Centred on the rim rather than hung below it: the
+                        // crest is also where the subject is set, and a
+                        // marker sunk into the band lands on the text.
+                        y: arch.inset + arch.drop(at: cursor) - arch.markerSize * 0.05
                     )
             }
         }
     }
 
     private func lessons(_ arch: Arch, width: CGFloat) -> some View {
-        HStack(alignment: .top, spacing: 3) {
+        HStack(alignment: .top, spacing: Self.lessonSpacing) {
             // A week without a single lesson — a weekend with nothing fetched
             // ahead, or an empty timetable — still gets the arch, with its
             // title riding the crest where the focus would.
@@ -159,56 +163,84 @@ struct NextLessonWidgetView: View {
                 Text(emptyTitle)
                     .font(.system(size: arch.subjectSize, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .offset(y: arch.textTop(at: 0.5, isFocus: false))
+                    .frame(maxWidth: .infinity, minHeight: arch.thickness)
+                    .offset(y: arch.bandTop(at: 0.5) + arch.nudge(.single(hasTeacher: false)))
             } else {
+                let widths = slotWidths(row: width - Self.lessonInset * 2)
                 ForEach(Array(entry.slots.enumerated()), id: \.offset) { index, lesson in
                     let focus = index == focusSlot
-                    cell(for: lesson, isFocus: focus, arch: arch)
+                    let position = anchor(of: index, width: width)
+                    let layout = layout(for: lesson, isFocus: focus, arch: arch, width: widths[index])
+                    // The size the subject and its period are set at, fitted
+                    // to the width the slot actually has.
+                    let size = lesson.map {
+                        fittedSize(for: $0, layout: layout, isFocus: focus, arch: arch, width: widths[index])
+                    } ?? arch.periodSize(layout, isFocus: focus)
+                    cell(for: lesson, layout: layout, size: size, isFocus: focus, arch: arch, width: widths[index])
+                        // Centred by the layout system inside a frame as deep
+                        // as the band, rather than by a guess at how tall the
+                        // text will come out. Hangul sets taller than the
+                        // metrics such a guess assumes, and the shortfall
+                        // showed as every lesson riding low on the band — the
+                        // focus twice as far as its flanks, having two lines
+                        // to be wrong about.
+                        .frame(width: widths[index], height: arch.thickness)
                         // The flanks lean with the band: each is turned to
                         // the arch's own tangent where it stands, so the
                         // lessons ride the curve rather than hover over it.
                         // The focus sits at the crest, where the tangent is
                         // flat anyway.
-                        .rotationEffect(focus ? .zero : arch.tilt(at: anchor(of: index), width: width))
-                        // Each lesson is centred on the band's own centreline
-                        // where it stands, so it rides the arch instead of
-                        // sitting on a flat line across it. Aligning tops or
-                        // baselines instead leaves the smaller flanking
-                        // lessons floating high or low in the band.
-                        .offset(y: arch.textTop(at: anchor(of: index), isFocus: focus))
+                        .rotationEffect(focus ? .zero : arch.tilt(at: position, width: width))
+                        // The frame now spans the band exactly, so the whole
+                        // placement is where the band's top edge falls here.
+                        .offset(y: arch.bandTop(at: position) + arch.nudge(layout))
                 }
             }
         }
+        .padding(.horizontal, Self.lessonInset)
     }
 
-    @ViewBuilder private func cell(for lesson: Lesson?, isFocus: Bool, arch: Arch) -> some View {
+    @ViewBuilder private func cell(
+        for lesson: Lesson?,
+        layout: LessonLayout,
+        size: CGFloat,
+        isFocus: Bool,
+        arch: Arch,
+        width: CGFloat
+    ) -> some View {
         if let lesson {
-            VStack(spacing: -1) {
+            // Subject over teacher, set tight: the pair reads as one block,
+            // and the height it saves is clearance between the crest's marker
+            // and the top of the subject.
+            VStack(spacing: -2) {
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text(String(lesson.period))
-                        .font(.system(
-                            size: isFocus ? arch.subjectSize : arch.flankSize,
-                            weight: isFocus ? .semibold : .medium,
-                            design: .rounded
-                        ))
+                        .font(.system(size: size, weight: isFocus ? .semibold : .medium, design: .rounded))
                         .foregroundStyle(.white.opacity(isFocus ? 0.5 : 0.3))
+                        .lineLimit(1)
 
                     // The flanks sit much further back than the focus — far
                     // enough that at a glance only one lesson is on the card.
-                    Text(lesson.subject)
-                        .font(.system(
-                            size: isFocus ? arch.subjectSize : arch.flankSize,
-                            weight: isFocus ? .semibold : .medium
-                        ))
+                    Text(displaySubject(lesson, layout: layout, size: size, width: width))
+                        .font(.system(size: size, weight: isFocus ? .semibold : .medium))
                         .foregroundStyle(.white.opacity(isFocus ? 1 : 0.55))
+                        // A subject the school writes out in full — 창의적
+                        // 체험활동 — is set over two lines rather than shrunk
+                        // to nothing: broken at its own space it stays the
+                        // size of a subject, and the teacher gives up the
+                        // room, being the one thing on the card nobody reads
+                        // twice.
+                        .lineLimit(layout.isWrapped ? 2 : 1)
+                        .multilineTextAlignment(.center)
+                        // The size above is already fitted to the slot; this
+                        // is only a backstop for the rounding between what
+                        // was measured and what gets laid out.
+                        .minimumScaleFactor(0.9)
                 }
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
 
                 // Only the lesson in focus carries a teacher: three subjects
                 // over three names is more than the band can hold.
-                if isFocus, lesson.hasTeacher {
+                if layout.showsTeacher {
                     Text(lesson.teacher)
                         .font(.system(size: arch.teacherSize, weight: .medium))
                         .foregroundStyle(.white.opacity(0.5))
@@ -216,40 +248,51 @@ struct NextLessonWidgetView: View {
                         .minimumScaleFactor(0.6)
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: width)
         } else {
             // The edge of the day: the slot stays empty so the lesson in
             // focus keeps the crest.
-            Color.clear.frame(maxWidth: .infinity)
+            Color.clear.frame(width: width)
         }
     }
 
-    /// The countdown, set the way the references set a value: a dim label at
-    /// the leading edge, the number at the trailing one, loud and in the
-    /// day's own colour. A line with no label — the day is over, the week is
-    /// empty — has nothing to anchor against and stays centred.
+    /// The countdown, set as one phrase under the crest: a dim label, the
+    /// number loud and in the day's own colour, then what qualifies it. The
+    /// line is always centred — the pocket the arch leaves is centred, and a
+    /// label pushed out to the leading edge climbs into the band's underside.
     private func footerLine(_ arch: Arch) -> some View {
         let line = footer
-        return HStack(alignment: .firstTextBaseline, spacing: 3) {
+        return HStack(alignment: .firstTextBaseline, spacing: 2) {
             if let prefix = line.prefix {
                 Text(prefix)
-                    .kerning(0.4)
                     .font(.system(size: arch.footerSize, weight: .medium))
                     .foregroundStyle(.white.opacity(0.48))
-
-                Spacer(minLength: 4)
             }
 
             if let value = line.value {
-                Text(value)
-                    .font(.system(size: arch.footerValueSize, weight: .semibold, design: .rounded))
-                    .foregroundStyle(accent)
-                    .monospacedDigit()
-                    .shadow(color: accent.opacity(0.5), radius: 3)
+                // "24분" is a number and a unit, not one word: the references
+                // set the figure loud and let what it is measured in stay
+                // with the rest of the sentence. Splitting on the digits
+                // themselves handles a clock time, a run of minutes, and an
+                // hour and minutes together without a case for each.
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    ForEach(Array(Self.runs(of: value).enumerated()), id: \.offset) { _, run in
+                        if run.isFigure {
+                            Text(run.text)
+                                .font(.system(size: arch.footerValueSize, weight: .semibold, design: .rounded))
+                                .foregroundStyle(accent)
+                                .monospacedDigit()
+                                .shadow(color: accent.opacity(0.5), radius: 3)
+                        } else {
+                            Text(run.text)
+                                .font(.system(size: arch.footerSize, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                }
             }
 
             Text(line.suffix)
-                .kerning(0.4)
                 .font(.system(size: arch.footerSize, weight: .medium))
                 .foregroundStyle(.white.opacity(0.5))
         }
@@ -310,20 +353,20 @@ struct NextLessonWidgetView: View {
             let centre = CGPoint(x: size.width * glowAnchor, y: size.height * 0.5)
             let step = size.height * 0.24
             var radius = size.height * 0.2
+            // Gathered into one path and stroked once: the rings share a colour
+            // and a width, so a stroke apiece is one drawing call per ring for
+            // no visible difference.
+            var path = Path()
             while radius < size.width {
-                let rect = CGRect(
+                path.addEllipse(in: CGRect(
                     x: centre.x - radius,
                     y: centre.y - radius,
                     width: radius * 2,
                     height: radius * 2
-                )
-                context.stroke(
-                    Circle().path(in: rect),
-                    with: .color(.white.opacity(0.05)),
-                    lineWidth: 0.5
-                )
+                ))
                 radius += step
             }
+            context.stroke(path, with: .color(.white.opacity(0.05)), lineWidth: 0.5)
         }
     }
 
@@ -333,7 +376,7 @@ struct NextLessonWidgetView: View {
         RadialGradient(
             stops: [
                 .init(color: .clear, location: 0.55),
-                .init(color: .black.opacity(0.32), location: 1),
+                .init(color: .black.opacity(0.2), location: 1),
             ],
             center: UnitPoint(x: glowAnchor, y: 0.45),
             startRadius: 0,
@@ -379,11 +422,8 @@ struct NextLessonWidgetView: View {
 
     // MARK: - Position
 
-    /// The day's hue lifted most of the way to white: bright enough to carry
-    /// the countdown and the lit edge, still unmistakably the card's colour.
-    private var accent: Color {
-        DayHue.color(entry.dayProgress, brightness: 1, white: 0.55)
-    }
+    /// What the countdown and the lit edge are stated in.
+    private var accent: Color { DayHue.accent(entry.dayProgress) }
 
     /// `false` only when the whole week is empty — the slots then hold three
     /// blanks rather than nothing at all, which is why counting them beats
@@ -402,10 +442,188 @@ struct NextLessonWidgetView: View {
         return CGFloat(focusSlot) / CGFloat(entry.slots.count)
     }
 
-    /// The centre of the slot at `index`, in unit width.
-    private func anchor(of index: Int) -> CGFloat {
-        guard !entry.slots.isEmpty else { return 0.5 }
-        return (CGFloat(index) + 0.5) / CGFloat(entry.slots.count)
+    /// The inset and the gaps the lesson row is actually laid out with. The
+    /// anchors are measured through them: a slot's share of the bare card is
+    /// not where the padded row puts it, and a flank placed against the wrong
+    /// unit position rides the curve a little off the band.
+    private static let lessonInset: CGFloat = 5
+    private static let lessonSpacing: CGFloat = 3
+
+    /// How a cell is set, once its subject has been measured against the slot
+    /// it has to stand in. Measured rather than guessed from length: 진로와
+    /// 직업 fits where 창의적 체험 활동 does not, and how much of either fits
+    /// depends on the watch as much as on the string.
+    ///
+    /// Three steps down, each taken only when the one above it will not hold
+    /// the subject whole: full size over the teacher, a smaller size still
+    /// over the teacher, then two lines with the teacher given up. Truncation
+    /// is the last resort — half a subject cannot be read at any size.
+    private func layout(for lesson: Lesson?, isFocus: Bool, arch: Arch, width: CGFloat) -> LessonLayout {
+        guard let lesson, isFocus else { return .flank }
+
+        // Shrinking a little is better than breaking: a subject only just too
+        // wide reads better held on one line.
+        let subject = Self.capped(lesson.subject)
+        if room(for: lesson, size: arch.subjectSize, width: width)
+            .map({ measure(subject, size: arch.subjectSize) <= $0 / 0.8 }) == true {
+            return .single(hasTeacher: lesson.hasTeacher)
+        }
+
+        guard let room = room(for: lesson, size: arch.reducedSize, width: width),
+              measure(subject, size: arch.reducedSize) <= room
+        else { return .reduced(lines: 2, hasTeacher: false) }
+        return .reduced(lines: 1, hasTeacher: lesson.hasTeacher)
+    }
+
+    /// The size the period and the subject are both set at: the layout's own
+    /// size, or as far down as the subject has to come to fit its slot.
+    ///
+    /// Both are set from one number rather than left to `minimumScaleFactor`,
+    /// which shrinks each `Text` on its own: a period number is one digit and
+    /// never needs to shrink, so a long subject beside it ends up set smaller
+    /// than the number labelling it.
+    private func fittedSize(
+        for lesson: Lesson,
+        layout: LessonLayout,
+        isFocus: Bool,
+        arch: Arch,
+        width: CGFloat
+    ) -> CGFloat {
+        let base = arch.periodSize(layout, isFocus: isFocus)
+        guard let room = room(for: lesson, size: base, width: width) else { return base }
+        // A wrapped subject has a second line to spread into, so it is
+        // measured against both.
+        let available = room * CGFloat(layout.isWrapped ? 2 : 1)
+        let subject = measure(Self.capped(lesson.subject), size: base)
+        guard subject > available else { return base }
+        // A floor, not a licence to shrink: past this the subject is smaller
+        // than the countdown under it and stops reading as the thing the card
+        // is about. Anything that will not fit at this size is cut instead.
+        return max(base * available / subject, base * 0.75)
+    }
+
+    /// What the subject has to fit in: the slot, less the period number
+    /// standing in front of it. `nil` when there is no room at all.
+    private func room(for lesson: Lesson, size: CGFloat, width: CGFloat) -> CGFloat? {
+        let room = width - measure(String(lesson.period), size: size) - 3
+        return room > 0 ? room : nil
+    }
+
+    /// Text measurement is the card's hottest repeated work: fitting one
+    /// subject measures it several times over, and trimming a long one measures
+    /// again for every character it drops. The same handful of strings come
+    /// back at the same handful of sizes on every entry in a timeline, so the
+    /// widths are worth keeping.
+    private static let widths = Mutex<[Measurement: CGFloat]>([:])
+
+    private struct Measurement: Hashable {
+        var text: String
+        var size: CGFloat
+    }
+
+    private func measure(_ text: String, size: CGFloat) -> CGFloat {
+        let key = Measurement(text: text, size: size)
+        if let cached = Self.widths.withLock({ $0[key] }) { return cached }
+        let width = text.size(withAttributes: [
+            .font: UIFont.systemFont(ofSize: size, weight: .semibold)
+        ]).width
+        Self.widths.withLock { widths in
+            // A day's worth of subjects at a few sizes each; the bound is only
+            // there so a pathological feed cannot grow this without end.
+            if widths.count > 512 { widths.removeAll(keepingCapacity: true) }
+            widths[key] = width
+        }
+        return width
+    }
+
+    /// What the subject is actually drawn as: broken so that it can wrap, and
+    /// cut with an ellipsis when even two lines will not hold it.
+    ///
+    /// The cut is made here rather than left to the text view. A string broken
+    /// by zero-width spaces truncates without ever drawing its ellipsis, so a
+    /// subject too long for the card would simply stop, with nothing to say
+    /// that the rest of it exists.
+    private func displaySubject(
+        _ lesson: Lesson,
+        layout: LessonLayout,
+        size: CGFloat,
+        width: CGFloat
+    ) -> String {
+        let subject = Self.capped(lesson.subject)
+        guard layout.isWrapped else { return subject }
+
+        // The first line stands beside the period number; the second has the
+        // slot to itself. Measured a little short, since where the line
+        // actually breaks is the text view's call, not ours.
+        let capacity = ((room(for: lesson, size: size, width: width) ?? width) + width) * 0.95
+        let alreadyCut = subject.hasSuffix(Self.ellipsis)
+        guard alreadyCut || measure(subject, size: size) > capacity else {
+            return Self.breakable(subject)
+        }
+
+        // Cut a character short of the true capacity: the ellipsis has to end
+        // up on the second line, and a cut made right at the edge pushes it
+        // onto a third line that the line limit then throws away — taking the
+        // only sign that the subject was cut with it.
+        let room = capacity - measure("가", size: size)
+        var head = Array(alreadyCut ? String(subject.dropLast()) : subject)
+        while !head.isEmpty, measure(String(head) + Self.ellipsis, size: size) > room {
+            head.removeLast()
+        }
+        return Self.breakable(String(head)) + Self.ellipsis
+    }
+
+    /// The longest subject the card sets in full. The feed occasionally puts a
+    /// whole course title where a subject belongs, and past about this length
+    /// there is no size the band can hold that is still read at a glance — the
+    /// opening of the name says more than all of it set too small to read.
+    private static let subjectLimit = 10
+    private static let ellipsis = "…"
+
+    private static func capped(_ subject: String) -> String {
+        guard subject.count > subjectLimit else { return subject }
+        let head = subject.prefix(subjectLimit).trimmingCharacters(in: .whitespaces)
+        return head + ellipsis
+    }
+
+    /// Korean breaks lines at spaces, so a subject written as one unbroken run
+    /// — 국제사회문화탐구 — would sooner truncate than take the second line it
+    /// has been given. Zero-width spaces let it break between characters,
+    /// which is where a Korean reader breaks it anyway.
+    private static func breakable(_ subject: String) -> String {
+        guard !subject.contains(" ") else { return subject }
+        return subject.map(String.init).joined(separator: "\u{200B}")
+    }
+
+    /// The share of the row the lesson in focus is given. It carries the
+    /// longest string on the card — a subject written out in full, over a
+    /// teacher — while each flank carries a number and a word, so an even
+    /// three-way split starves the only line anyone reads.
+    private static let focusShare: CGFloat = 0.44
+
+    /// How wide each slot is laid out, leading to trailing.
+    private func slotWidths(row: CGFloat) -> [CGFloat] {
+        let count = entry.slots.count
+        guard count > 0 else { return [] }
+        let free = row - Self.lessonSpacing * CGFloat(count - 1)
+        guard free > 0 else { return Array(repeating: 0, count: count) }
+        // With no lesson in focus — the day already over — there is nothing
+        // to favour, so the row splits evenly.
+        guard count > 1, entry.slots.indices.contains(focusSlot) else {
+            return Array(repeating: free / CGFloat(count), count: count)
+        }
+        let focus = free * Self.focusShare
+        let flank = (free - focus) / CGFloat(count - 1)
+        return (0..<count).map { $0 == focusSlot ? focus : flank }
+    }
+
+    /// The centre of the slot at `index`, in unit width of the whole card —
+    /// the frame the arch itself is drawn in.
+    private func anchor(of index: Int, width: CGFloat) -> CGFloat {
+        let widths = slotWidths(row: width - Self.lessonInset * 2)
+        guard width > 0, widths.indices.contains(index) else { return 0.5 }
+        let leading = widths[..<index].reduce(Self.lessonInset) { $0 + $1 + Self.lessonSpacing }
+        return (leading + widths[index] / 2) / width
     }
 
     /// Where the marker sits, in unit width: crossing the lesson in progress,
@@ -470,12 +688,7 @@ struct NextLessonWidgetView: View {
 
         switch entry.status {
         case .current:
-            // A running lesson needs no label — the countdown alone, centred.
-            // Only the day's last period earns a word at the leading edge.
-            let label = entry.isLastLesson ? "마지막 교시" : nil
-            guard let minutes = remainingMinutes else { return Footer(suffix: label ?? "수업 중") }
-            guard minutes > 0 else { return Footer(prefix: label, suffix: "곧 종료") }
-            return Footer(prefix: label, value: durationText(minutes), suffix: "남음")
+            return runningFooter
         case .upcoming:
             return startFooter
         case .future:
@@ -491,18 +704,44 @@ struct NextLessonWidgetView: View {
         }
     }
 
+    /// A lesson in progress counts down to what comes after it, not to its own
+    /// bell: sitting in fourth period, the answer the wearer wants is how long
+    /// until lunch. The day's last lesson has nothing after it to name, so it
+    /// alone counts down to itself.
+    private var runningFooter: Footer {
+        guard let minutes = remainingMinutes else {
+            return Footer(suffix: entry.isLastLesson ? "마지막 교시" : "수업 중")
+        }
+        guard let label = nextBreakLabel else {
+            let last = entry.isLastLesson ? "마지막 교시" : nil
+            guard minutes > 0 else { return Footer(prefix: last, suffix: "곧 종료") }
+            return Footer(prefix: last, value: durationText(minutes), suffix: "남음")
+        }
+        guard minutes > 0 else { return Footer(prefix: label, suffix: "곧 시작") }
+        return Footer(prefix: label, value: durationText(minutes), suffix: "후 시작")
+    }
+
+    /// A break counts down as itself — what is left of it — rather than as the
+    /// lesson on the far side. Before the first bell there is no break to
+    /// count, only the wait, which is stated as the wait it is.
+    ///
     /// Close to the bell the wearer wants minutes; further out, the clock time
-    /// is the more useful answer. A break names itself; before the first bell
-    /// there is no break to name, so the label falls back to the wait itself.
+    /// is the more useful answer.
     private var startFooter: Footer {
-        let label = breakLabel ?? "수업 전"
+        if let label = breakLabel {
+            guard let minutes = remainingMinutes else { return Footer(prefix: label, suffix: "진행 중") }
+            guard minutes > 0 else { return Footer(prefix: label, suffix: "곧 종료") }
+            return Footer(prefix: label, value: durationText(minutes), suffix: "남음")
+        }
+
+        let label = "수업 전"
         guard let minutes = remainingMinutes else {
             guard let clock = entry.startsAt?.schoolClockText else { return Footer(suffix: "다음 수업") }
             return Footer(prefix: label, value: clock, suffix: "시작")
         }
         guard minutes > 0 else { return Footer(prefix: label, suffix: "곧 시작") }
         guard minutes > 60, let clock = entry.startsAt?.schoolClockText else {
-            return Footer(prefix: label, value: "\(minutes)분", suffix: "후 시작")
+            return Footer(prefix: label, value: durationText(minutes), suffix: "후 시작")
         }
         return Footer(prefix: label, value: clock, suffix: "시작")
     }
@@ -511,7 +750,16 @@ struct NextLessonWidgetView: View {
     /// anything shorter is the usual few minutes between rooms.
     private var breakLabel: String? {
         guard isBreak, let length = breakLength else { return nil }
-        return length >= 40 ? "점심시간" : "쉬는 시간"
+        return Self.breakName(minutes: length)
+    }
+
+    /// The same naming for the gap the current lesson is running towards.
+    private var nextBreakLabel: String? {
+        entry.breakAfterLength.map(Self.breakName)
+    }
+
+    private static func breakName(minutes: Int) -> String {
+        minutes >= 40 ? "점심시간" : "쉬는 시간"
     }
 
     private func durationText(_ minutes: Int) -> String {
@@ -546,6 +794,30 @@ struct NextLessonWidgetView: View {
         return Text(parts.joined(separator: ", "))
     }
 
+    /// One stretch of a value that is set all one way: either the figure
+    /// itself or the unit riding with it.
+    struct Run {
+        var text: String
+        var isFigure: Bool
+    }
+
+    /// Splits a value into its figures and everything between them. A colon
+    /// counts as part of a clock time rather than a separator, so "09:30"
+    /// stays one figure.
+    static func runs(of value: String) -> [Run] {
+        var runs: [Run] = []
+        for character in value {
+            let isFigure = character.isNumber || character == ":"
+            if var last = runs.last, last.isFigure == isFigure {
+                last.text.append(character)
+                runs[runs.count - 1] = last
+            } else {
+                runs.append(Run(text: String(character), isFigure: isFigure))
+            }
+        }
+        return runs
+    }
+
     /// The countdown in three parts, so the number can be set apart from what
     /// qualifies it.
     struct Footer {
@@ -571,11 +843,37 @@ private enum DayHue {
         (0.66, 0.24, 0.50),
     ]
 
+    /// What the card states a value in. The field's own hue lifted towards
+    /// white only ever gives a paler version of the ground it is read
+    /// against, which is no accent at all; these are the hues that ground
+    /// throws off when it is lit — icy at the first period, gold by the last
+    /// — so the number reads as the brightest thing on the card rather than
+    /// the palest.
+    private static let accentStops: [(r: Double, g: Double, b: Double)] = [
+        (0.53, 0.93, 1.00),
+        (0.74, 0.90, 1.00),
+        (1.00, 0.83, 0.60),
+    ]
+
     /// - Parameters:
     ///   - progress: 0 at the first period, 1 at the last.
     ///   - brightness: scales the colour down towards black.
     ///   - white: lifts it towards white, for the lit crest.
     static func color(_ progress: CGFloat, brightness: Double = 1, white: Double = 0) -> Color {
+        interpolate(stops, progress, brightness: brightness, white: white)
+    }
+
+    /// The accent for a day at `progress`, warming with it.
+    static func accent(_ progress: CGFloat) -> Color {
+        interpolate(accentStops, progress)
+    }
+
+    private static func interpolate(
+        _ stops: [(r: Double, g: Double, b: Double)],
+        _ progress: CGFloat,
+        brightness: Double = 1,
+        white: Double = 0
+    ) -> Color {
         let clamped = min(max(Double(progress), 0), 1)
         let position = clamped * Double(stops.count - 1)
         let index = min(Int(position), stops.count - 2)
@@ -593,6 +891,29 @@ private enum DayHue {
             green: channel(lower.g, upper.g),
             blue: channel(lower.b, upper.b)
         )
+    }
+}
+
+/// How one lesson is set on the band.
+private enum LessonLayout {
+    /// A neighbour: a number and a subject, dim and small.
+    case flank
+    /// The focus at its own size, on one line, over its teacher.
+    case single(hasTeacher: Bool)
+    /// The focus set smaller because its subject is long — on one line with
+    /// the teacher if that is enough room, on two lines without if it is not.
+    /// The teacher is what gives way: it is the one thing on the card nobody
+    /// reads twice.
+    case reduced(lines: Int, hasTeacher: Bool)
+
+    var isWrapped: Bool { if case .reduced(let lines, _) = self { lines > 1 } else { false } }
+
+    var showsTeacher: Bool {
+        switch self {
+        case .flank: false
+        case .single(let hasTeacher): hasTeacher
+        case .reduced(_, let hasTeacher): hasTeacher
+        }
     }
 }
 
@@ -615,27 +936,44 @@ private struct Arch {
 
     var subjectSize: CGFloat { height * 0.30 }
     var flankSize: CGFloat { height * 0.26 }
-    var teacherSize: CGFloat { height * 0.16 }
-    var footerSize: CGFloat { height * 0.175 }
+    var teacherSize: CGFloat { height * 0.185 }
+    var footerSize: CGFloat { height * 0.155 }
     /// The countdown outweighs everything qualifying it — the loudest number
-    /// on the card, per the references.
-    var footerValueSize: CGFloat { height * 0.215 }
+    /// on the card, per the references, which set a value at half again what
+    /// its units are set at rather than a hair over.
+    var footerValueSize: CGFloat { height * 0.245 }
     var markerSize: CGFloat { height * 0.085 }
 
-    /// The middle of the band at unit position `x`.
-    func centre(at x: CGFloat) -> CGFloat { inset + drop(at: x) + thickness / 2 }
-
-    /// What a lesson stands on: its own height centred on the band, nudged
-    /// down enough to leave the crest's rim to the marker.
-    func textTop(at x: CGFloat, isFocus: Bool) -> CGFloat {
-        centre(at: x) - contentHeight(isFocus: isFocus) / 2 + height * 0.03
+    /// The size a cell's subject and period are set at. A wrapped subject
+    /// gives up some size to buy its second line — two lines at the focus's
+    /// full size are taller than the band itself.
+    func periodSize(_ layout: LessonLayout, isFocus: Bool) -> CGFloat {
+        switch layout {
+        case .flank: isFocus ? subjectSize : flankSize
+        case .single: subjectSize
+        case .reduced: reducedSize
+        }
     }
 
-    /// Close enough to the laid-out height of a cell to centre it without
-    /// measuring the text. Only the focus carries a second line.
-    private func contentHeight(isFocus: Bool) -> CGFloat {
-        guard isFocus else { return flankSize * 1.22 }
-        return subjectSize * 1.22 + teacherSize * 1.22 - 1
+    /// What a long subject is set at. Two lines at the focus's own size are
+    /// taller than the band itself, so the second line is bought with size.
+    var reducedSize: CGFloat { height * 0.215 }
+
+    /// The band's top edge at unit position `x` — what a cell as deep as the
+    /// band is offset by, so that centring the text inside that frame centres
+    /// it on the band.
+    func bandTop(at x: CGFloat) -> CGFloat { inset + drop(at: x) }
+
+    /// The one thing measurement cannot give: the band's underside is in
+    /// shadow and its lit upper face is not, so text centred exactly reads
+    /// low. The flanks are lifted off the geometric centre; a lesson carrying
+    /// a teacher underneath is left alone, its second line already balancing
+    /// the block against the crest where the marker rides.
+    func nudge(_ layout: LessonLayout) -> CGFloat {
+        switch layout {
+        case .flank: -height * 0.02
+        case .single, .reduced: 0
+        }
     }
 
     /// How far below the crest the band sits at unit position `x`.

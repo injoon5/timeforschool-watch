@@ -41,11 +41,19 @@ struct LessonDTO: Decodable, Sendable {
     var lesson: Lesson {
         Lesson(
             period: period,
-            subject: subject.trimmingCharacters(in: .whitespacesAndNewlines),
+            subject: LessonDTO.subjectName(subject),
             teacher: teacher.trimmingCharacters(in: .whitespacesAndNewlines),
             isReplaced: replaced,
-            originalSubject: original
+            originalSubject: original.map(LessonDTO.subjectName)
         )
+    }
+
+    /// The feed writes the Latin letter in a split class inconsistently —
+    /// 사회b one week, 사회B the next — and the two read as different subjects
+    /// on a card that shows one word. Upper case throughout: it is how the
+    /// timetable is printed, and Korean is untouched by the conversion.
+    static func subjectName(_ raw: String) -> String {
+        raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
     }
 
     private enum CodingKeys: String, CodingKey {
